@@ -1,0 +1,24 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "./start.sh",
+            "windows": {
+                "command": ".\\start.bat",
+                "options": {
+                    "env": {
+                        "VSCODE": "VSCODE"
+                    }
+                }
+            }
+        }
+    ]
+}
