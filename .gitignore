@@ -1,3 +1,4 @@
 /deno_std
 /logs
 error.log
+deno.exe
