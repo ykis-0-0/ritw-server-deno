@@ -5,8 +5,9 @@ import { ConstructorPrototype, ProtoDef, InstanceRef, ReThis } from '../utils/cp
 import './endpoints/mod.ts';
 
 interface DispatcherPrivate {
-  triggers: [string, string][];
-  handlers: [string, (req: ServerRequest | undefined) => boolean][];
+  triggers: {
+    [path: string]: (req: ServerRequest | undefined) => boolean
+  };
 }
 
 interface DispatcherPublic {
@@ -15,27 +16,23 @@ interface DispatcherPublic {
 
 interface DispatcherProto {
   handle(req: ServerRequest | undefined): boolean;
-  registerHandler(name: string, handler: (req: ServerRequest | undefined) => boolean): boolean;
-  registerTrigger(name: string, path: string): boolean;
+  registerTrigger(path: string, handler: (req: ServerRequest | undefined) => boolean): void;
 }
 
 // TODO should we cast it into new() => Dispatcher?
 
 const Dispatcher = function(): void {
   if(!new.target) throw new SyntaxError('Please use new Dispatcher()');
-  this.triggers = [];
-  this.handlers = [];
+  this.triggers = {};
 } as ConstructorPrototype<DispatcherProto, DispatcherPrivate & DispatcherPublic, () => void>;
 
 let prot: ProtoDef<typeof Dispatcher> = {
   handle: function(req) {
     return false;
   },
-  registerHandler: function(name, handler) {
-    return false;
-  },
-  registerTrigger: function(name, path) {
-    return false;
+  registerTrigger: function(path, handler) {
+    if(path in this.triggers) throw new ReferenceError('path already claimed');
+    this.triggers[path] = handler;
   }
 };
 
