@@ -1,28 +1,45 @@
 import { ServerRequest } from 'deno_std/http/mod.ts';
 
+import { ConstructorPrototype, ProtoDef, InstanceRef, RecurseType, ReThis } from '../utils/cprot.ts';
+
 import './endpoints/mod.ts';
 
-interface Dispatcher {
-  listeners: [string, string][];
-  //handle(req: ServerRequest | undefined): boolean;
+interface DispatcherPrivate {
+  triggers: [string, string][];
+  handlers: [string, (req: ServerRequest | undefined) => boolean][];
 }
 
-interface ConstructorPrototype<T> {
-  (this: typeof globalThis | undefined, ...args: any): T;
-  (this: T, ...args: any): void;
-  new(): T;
-
-  prototype: T;
+interface DispatcherPublic {
+  // TODO will we even have Public fields?
 }
 
-type a = DateConstructor;
+interface DispatcherProto {
+  handle(req: ServerRequest | undefined): boolean;
+  registerHandler(name: string, handler: (req: ServerRequest | undefined) => boolean): boolean;
+  registerTrigger(name: string, path: string): boolean;
+}
 
-var Dispatcher : new() => Dispatcher = function(this: Dispatcher, a: string): void {
+// TODO should we cast it into new() => Dispatcher?
+
+const Dispatcher = function(): void {
   if(!new.target) throw new SyntaxError('Please use new Dispatcher()');
-  this.listeners = [];
-} as ConstructorPrototype<Dispatcher> as new() => Dispatcher;
+  this.triggers = [];
+  this.handlers = [];
+} as ConstructorPrototype<DispatcherProto, DispatcherPrivate & DispatcherPublic, () => void>;
 
-Dispatcher.prototype.handle = function(req: ServerRequest | undefined) { return false};
+let prot: ProtoDef<typeof Dispatcher> = {
+  handle: function(req) {
+    return false;
+  },
+  registerHandler: function(name, handler) {
+    return false;
+  },
+  registerTrigger: function(name, path) {
+    return false;
+  }
+};
+
+//Dispatcher.prototype = prot;
 
 let a = new Dispatcher();
 a.handle(undefined);
