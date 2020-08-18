@@ -1,6 +1,6 @@
 import { ServerRequest } from 'deno_std/http/mod.ts';
 
-import { ConstructorPrototype, ProtoDef, InstanceRef, RecurseType, ReThis } from '../utils/cprot.ts';
+import { ConstructorPrototype, ProtoDef, InstanceRef, Recurse, ReThis } from '../utils/cprot.ts';
 
 import './endpoints/mod.ts';
 
