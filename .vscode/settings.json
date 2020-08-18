@@ -1,4 +1,7 @@
 {
   "deno.enable": true,
-  "deno.importmap": "./importmap_vscode.json"
+  "deno.import_map": "./importmap.json",
+  "terminal.integrated.env.windows": {
+    "DENO_ENV": "%USERPROFILE%\\Desktop\\Rpi\\deno-x86_64-pc-windows-msvc"
+  }
 }

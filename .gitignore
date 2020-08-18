@@ -1,4 +1,4 @@
-/deno_std
 /logs
+/deno_modules
 error.log
 deno.exe
