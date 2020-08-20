@@ -1,15 +1,16 @@
 import { ServerRequest } from 'deno_std/http/mod.ts';
 
-import { ConstructorPrototype, ProtoDef, InstanceRef, ReThis } from '../utils/cprot.ts';
+import { ConstructorPrototype, ProtoDef, PreexportWrapper, ExportUnwrap } from '../utils/cprot.ts';
 
 import './endpoints/mod.ts';
 
 interface DispatcherPrivate {
   triggers: {
-    [path: string]: (req: ServerRequest | undefined) => boolean
+    [path: string]: (req: ServerRequest | undefined) => boolean;
   };
 }
 
+// ! Empty interfaces may makes ExportUnwrap fails
 interface DispatcherPublic {
   // TODO will we even have Public fields?
 }
@@ -24,9 +25,9 @@ interface DispatcherProto {
 const Dispatcher = function(): void {
   if(!new.target) throw new SyntaxError('Please use new Dispatcher()');
   this.triggers = {};
-} as ConstructorPrototype<DispatcherProto, DispatcherPrivate & DispatcherPublic, () => void>;
+} as ConstructorPrototype<DispatcherProto, PreexportWrapper<DispatcherPublic, DispatcherPrivate>, () => void>;
 
-let prot: ProtoDef<typeof Dispatcher> = {
+let prot: ProtoDef<typeof Dispatcher> = { 
   handle: function(req) {
     return false;
   },
@@ -36,7 +37,9 @@ let prot: ProtoDef<typeof Dispatcher> = {
   }
 };
 
-//Dispatcher.prototype = prot;
+Dispatcher.prototype = prot;
 
 let a = new Dispatcher();
 a.handle(undefined);
+
+export default Dispatcher as ExportUnwrap<typeof Dispatcher>;
