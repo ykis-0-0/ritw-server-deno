@@ -1,6 +1,6 @@
 import { ServerRequest } from 'deno_std/http/mod.ts';
 
-import { ConstructorPrototype, ProtoDef, PreexportWrapper, ExportUnwrap } from '../utils/cprot.ts';
+import { ConstructorPrototype, ProtoClassDef, ProtoDef, CInstUnwrap } from '../utils/cprot.ts';
 
 import './endpoints/mod.ts';
 
@@ -20,14 +20,20 @@ interface DispatcherProto {
   registerTrigger(path: string, handler: (req: ServerRequest | undefined) => boolean): void;
 }
 
+interface DispatcherStatic {
+  getDispatcher(id: string): Exported
+}
+
+type Dispatcher = ProtoClassDef<DispatcherProto, DispatcherPublic, DispatcherPrivate, () => void>;
+
 // TODO should we cast it into new() => Dispatcher?
 
 const Dispatcher = function(): void {
   if(!new.target) throw new SyntaxError('Please use new Dispatcher()');
   this.triggers = {};
-} as ConstructorPrototype<DispatcherProto, PreexportWrapper<DispatcherPublic, DispatcherPrivate>, () => void>;
+} as ConstructorPrototype<Dispatcher>;
 
-let prot: ProtoDef<typeof Dispatcher> = { 
+let prot: ProtoDef<Dispatcher> = { 
   handle: function(req) {
     return false;
   },
@@ -39,7 +45,18 @@ let prot: ProtoDef<typeof Dispatcher> = {
 
 Dispatcher.prototype = prot;
 
+type Exported = CInstUnwrap<Dispatcher>;
+
+const exp: DispatcherStatic & Exported = Object.assign(Dispatcher, {getDispatcher});
+
+function getDispatcher(id: string): Exported {
+  if(!(id in dispatchers)) throw new ReferenceError('non existent id');
+  return dispatchers[id];
+}
+
+let dispatchers: { [id: string]: Exported;} = {};
+
 let a = new Dispatcher();
 a.handle(undefined);
 
-export default Dispatcher as ExportUnwrap<typeof Dispatcher>;
+export default Dispatcher as Exported;
