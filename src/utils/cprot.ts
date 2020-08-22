@@ -1,10 +1,8 @@
-export type InstanceRef<P extends object, I extends object> = Readonly<P> & I;
-
 export type ReThis<O extends object, T extends object> = {
   [E in keyof O]: O[E] extends (this: void, ...args: infer A) => infer R ? (this: T, ...args: A) => R : O[E];
 }
 
-type PcdOptions<P extends object, Ipu extends object, Ipr extends object, A extends any[]> = {
+type PcdOptions<P extends object, Ipu extends object, Ipr extends object, A extends unknown[]> = {
   P: P;
   Ipu: Ipu;
   Ipr: Ipr;
@@ -17,16 +15,26 @@ export type ProtoClassDef<P extends object, Ipu extends object, Ipr extends obje
   : never
 : never;
 
+export type InstancePrv<Pcd>
+= Pcd extends PcdOptions<infer P, infer Ipu, infer Ipr, unknown[]>
+? Readonly<P> & Ipu & Ipr
+: never;
+
+export type InstancePub<Pcd>
+= Pcd extends PcdOptions<infer P, infer Ipu, infer Ipr, unknown[]>
+? Readonly<P> & Ipu
+: never;
+
 export type ProtoDef<Pcd>
-= Pcd extends ProtoClassDef<infer P, infer Ipu, infer Ipr, any>
-? ReThis<P, InstanceRef<P, Ipu & Ipr>>
+= Pcd extends PcdOptions<infer P, infer Ipu, infer Ipr, unknown[]>
+? ReThis<P, InstancePrv<Pcd>>
 : never;
 
 export type ConstructorPrototype<Pcd>
 = Pcd extends PcdOptions<infer P, infer Ipu, infer Ipr, infer A>
 ? {
-  new(...args: A): InstanceRef<P, Ipu>;
-  (this: InstanceRef<P, Ipu & Ipr>, ...args: A): void;
+  new(...args: A): InstancePub<Pcd>;
+  (this: InstancePrv<Pcd>, ...args: A): void;
 
   prototype: ProtoDef<Pcd>;
   }
@@ -34,5 +42,5 @@ export type ConstructorPrototype<Pcd>
 
 export type CInstUnwrap<Pcd>
 = Pcd extends PcdOptions<infer P, infer Ipu, infer Ipr, infer A>
-? new(...args: A) => InstanceRef<P, Ipu>
+? new(...args: A) => InstancePub<Pcd>
 : never;
