@@ -1,5 +1,5 @@
-import * as log from 'deno_std/log/mod.ts';
-import {Logger} from 'deno_std/log/logger.ts';
+import * as log from '$deno_std/log/mod.ts';
+import {Logger} from '$deno_std/log/logger.ts';
 
 import getDateString from '../dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
