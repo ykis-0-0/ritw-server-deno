@@ -1,6 +1,6 @@
-import { BaseHandler } from 'deno_std/log/handlers.ts';
-import { LogRecord } from 'deno_std/log/logger.ts';
-import { LevelName } from 'deno_std/log/levels.ts'
+import { BaseHandler } from '$deno_std/log/handlers.ts';
+import { LogRecord } from '$deno_std/log/logger.ts';
+import { LevelName } from '$deno_std/log/levels.ts'
 
 export default class MyConsoleHandler extends BaseHandler {
 

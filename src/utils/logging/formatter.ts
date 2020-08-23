@@ -1,5 +1,4 @@
-import { LogRecord } from "deno_std/log/logger.ts";
-import * as colors from 'deno_std/fmt/colors.ts';
+import * as colors from '$deno_std/fmt/colors.ts';
 
 import getDateString from '../dstring_iso.ts'
 
