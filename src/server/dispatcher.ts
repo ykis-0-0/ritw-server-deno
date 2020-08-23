@@ -1,4 +1,4 @@
-import { ServerRequest } from 'deno_std/http/mod.ts';
+import { ServerRequest } from '$deno_std/http/mod.ts';
 
 import { ConstructorPrototype, ProtoClassDef, ProtoDef, CInstUnwrap, InstancePrv, InstancePub } from '../utils/cprot.ts';
 
@@ -11,7 +11,6 @@ interface DispatcherPrivate {
   // => I think we don't have privates this time
 }
 
-// ! Empty interfaces may makes ExportUnwrap fails
 interface DispatcherPublic {
   [privates_]: {
     triggers: {
@@ -23,6 +22,7 @@ interface DispatcherPublic {
 interface DispatcherProto {
   handle(req: ServerRequest): boolean;
   registerTrigger(path: string, handler: (req: ServerRequest) => boolean): void;
+  dropTrigger(path: string): void;
 }
 
 type Dispatcher = ProtoClassDef<DispatcherProto, DispatcherPublic, DispatcherPrivate, () => void>;
@@ -32,8 +32,6 @@ interface DispatcherStatic {
   getDispatcher(name: string): InstancePub<Dispatcher>;
 }
 
-// => should we cast it into new() => Dispatcher?
-
 const Dispatcher = function(): void {
   if(!new.target) throw new SyntaxError('Please use new Dispatcher()');
   this[privates_].triggers = {};
@@ -41,12 +39,18 @@ const Dispatcher = function(): void {
 
 let prot: ProtoDef<Dispatcher> = { 
   handle: function(req) {
-    return false;
+    const matches: string[] = Object.keys(this[privates_].triggers).sort().reverse().filter(_ => req.url.startsWith(_));
+    if(matches.length === 0) return false;
+
+    const match: string = matches[0];
+    req.url = req.url.replace(match, '');
+
+    return this[privates_].triggers[match](req);
   },
   registerTrigger: function(path, handler) {
     if(path in this[privates_].triggers) throw new ReferenceError('path already claimed');
 
-    if(!path.startsWith('/')) throw new SyntaxError('path must start with /')
+    if(!path.startsWith('/')) throw new SyntaxError('path must start with /');
 
     // => unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
     // => sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
@@ -57,13 +61,18 @@ let prot: ProtoDef<Dispatcher> = {
     ];
 
     if(![...path].every(_ => pchars.includes(_))) throw new SyntaxError('path contain illegal characters');
+    
     this[privates_].triggers[path] = handler;
+  },
+  dropTrigger: function(path) {
+    if(!(path in this[privates_].triggers)) throw new ReferenceError('path not claimed');
+    delete this[privates_].triggers[path];
   }
 };
 
 Dispatcher.prototype = prot;
 
-let dispatchers: { [name: string]: InstancePrv<Dispatcher>;} = {};
+const dispatchers: { [name: string]: InstancePrv<Dispatcher>;} = {};
 
 const statics: DispatcherStatic = {
   defaultHandler,
@@ -75,7 +84,5 @@ const statics: DispatcherStatic = {
 
 type Exported = CInstUnwrap<Dispatcher> & DispatcherStatic;
 const exports: Exported = Object.assign(Dispatcher, statics);
-
-let a = new Dispatcher();
 
 export default exports;
