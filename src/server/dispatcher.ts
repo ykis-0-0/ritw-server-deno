@@ -4,17 +4,20 @@ import { ConstructorPrototype, ProtoClassDef, ProtoDef, CInstUnwrap, InstancePrv
 
 import './endpoints/mod.ts';
 
+const privates_: unique symbol = Symbol('For private fields access');
 const defaultHandler: unique symbol = Symbol('default handler for triggers');
 
 interface DispatcherPrivate {
-  triggers: {
-    [path: string]: (req: ServerRequest | undefined) => boolean;
-  };
+  // => I think we don't have privates this time
 }
 
 // ! Empty interfaces may makes ExportUnwrap fails
 interface DispatcherPublic {
-  // TODO will we even have Public fields?
+  [privates_]: {
+    triggers: {
+      [path: string]: (req: ServerRequest) => boolean;
+    }
+  }
 }
 
 interface DispatcherProto {
@@ -29,11 +32,11 @@ interface DispatcherStatic {
   getDispatcher(name: string): InstancePub<Dispatcher>;
 }
 
-// TODO should we cast it into new() => Dispatcher?
+// => should we cast it into new() => Dispatcher?
 
 const Dispatcher = function(): void {
   if(!new.target) throw new SyntaxError('Please use new Dispatcher()');
-  this.triggers = {};
+  this[privates_].triggers = {};
 } as ConstructorPrototype<Dispatcher>;
 
 let prot: ProtoDef<Dispatcher> = { 
@@ -41,8 +44,20 @@ let prot: ProtoDef<Dispatcher> = {
     return false;
   },
   registerTrigger: function(path, handler) {
-    if(path in this.triggers) throw new ReferenceError('path already claimed');
-    this.triggers[path] = handler;
+    if(path in this[privates_].triggers) throw new ReferenceError('path already claimed');
+
+    if(!path.startsWith('/')) throw new SyntaxError('path must start with /')
+
+    // => unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
+    // => sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+    const pchars: string[] = [
+      ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      ...'abcdefghijklmnopqrstuvwxyz',
+      ...'0123456489', ...'-._~', ...'!$'
+    ];
+
+    if(![...path].every(_ => pchars.includes(_))) throw new SyntaxError('path contain illegal characters');
+    this[privates_].triggers[path] = handler;
   }
 };
 
