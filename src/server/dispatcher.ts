@@ -18,8 +18,8 @@ interface DispatcherPublic {
 }
 
 interface DispatcherProto {
-  handle(req: ServerRequest | undefined): boolean;
-  registerTrigger(path: string, handler: (req: ServerRequest | undefined) => boolean): void;
+  handle(req: ServerRequest): boolean;
+  registerTrigger(path: string, handler: (req: ServerRequest) => boolean): void;
 }
 
 type Dispatcher = ProtoClassDef<DispatcherProto, DispatcherPublic, DispatcherPrivate, () => void>;
@@ -62,6 +62,5 @@ type Exported = CInstUnwrap<Dispatcher> & DispatcherStatic;
 const exports: Exported = Object.assign(Dispatcher, statics);
 
 let a = new Dispatcher();
-a.handle(undefined);
 
 export default exports;
