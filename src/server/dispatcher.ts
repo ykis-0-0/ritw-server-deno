@@ -20,11 +20,11 @@ interface DispatcherProto {
   registerTrigger(path: string, handler: (req: ServerRequest | undefined) => boolean): void;
 }
 
+type Dispatcher = ProtoClassDef<DispatcherProto, DispatcherPublic, DispatcherPrivate, () => void>;
+
 interface DispatcherStatic {
   getDispatcher(id: string): Exported
 }
-
-type Dispatcher = ProtoClassDef<DispatcherProto, DispatcherPublic, DispatcherPrivate, () => void>;
 
 // TODO should we cast it into new() => Dispatcher?
 
@@ -45,16 +45,16 @@ let prot: ProtoDef<Dispatcher> = {
 
 Dispatcher.prototype = prot;
 
-type Exported = CInstUnwrap<Dispatcher>;
-
 const exp: DispatcherStatic & Exported = Object.assign(Dispatcher, {getDispatcher});
+
+let dispatchers: { [id: string]: Exported;} = {};
 
 function getDispatcher(id: string): Exported {
   if(!(id in dispatchers)) throw new ReferenceError('non existent id');
   return dispatchers[id];
 }
 
-let dispatchers: { [id: string]: Exported;} = {};
+type Exported = CInstUnwrap<Dispatcher>;
 
 let a = new Dispatcher();
 a.handle(undefined);
