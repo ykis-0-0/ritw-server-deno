@@ -4,6 +4,8 @@ import { ConstructorPrototype, ProtoClassDef, ProtoDef, CInstUnwrap, InstancePrv
 
 import './endpoints/mod.ts';
 
+const defaultHandler: unique symbol = Symbol('default handler for triggers');
+
 interface DispatcherPrivate {
   triggers: {
     [path: string]: (req: ServerRequest | undefined) => boolean;
@@ -23,7 +25,8 @@ interface DispatcherProto {
 type Dispatcher = ProtoClassDef<DispatcherProto, DispatcherPublic, DispatcherPrivate, () => void>;
 
 interface DispatcherStatic {
-  getDispatcher(id: string): Exported
+  readonly defaultHandler: typeof defaultHandler;
+  getDispatcher(name: string): InstancePub<Dispatcher>;
 }
 
 // TODO should we cast it into new() => Dispatcher?
@@ -45,18 +48,20 @@ let prot: ProtoDef<Dispatcher> = {
 
 Dispatcher.prototype = prot;
 
-const exp: DispatcherStatic & Exported = Object.assign(Dispatcher, {getDispatcher});
+let dispatchers: { [name: string]: InstancePrv<Dispatcher>;} = {};
 
-let dispatchers: { [id: string]: Exported;} = {};
-
-function getDispatcher(id: string): Exported {
-  if(!(id in dispatchers)) throw new ReferenceError('non existent id');
-  return dispatchers[id];
+const statics: DispatcherStatic = {
+  defaultHandler,
+  getDispatcher: function(name: string): InstancePrv<Dispatcher> {
+    if(!(name in dispatchers)) throw new ReferenceError('name not found');
+    return dispatchers[name];
+  }
 }
 
-type Exported = CInstUnwrap<Dispatcher>;
+type Exported = CInstUnwrap<Dispatcher> & DispatcherStatic;
+const exports: Exported = Object.assign(Dispatcher, statics);
 
 let a = new Dispatcher();
 a.handle(undefined);
 
-export default Dispatcher as Exported;
+export default exports;
