@@ -12,6 +12,7 @@
         "--importmap=./importmap.json",
         "--unstable", "${workspaceFolder}/src/index.ts"
       ],
+      "outputCapture": "std",
       "port": 9229
     }
   ]

@@ -1,4 +1,5 @@
 {
   "deno.enable": true,
-  "deno.import_map": "./importmap.json"
+  "deno.import_map": "./importmap.json",
+  "debug.javascript.usePreview": false
 }
