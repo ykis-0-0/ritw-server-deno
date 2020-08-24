@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Deno Launch",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run", "-A", "--inspect-brk",
+        "--importmap=./importmap.json",
+        "--unstable", "${workspaceFolder}/src/index.ts"
+      ],
+      "outputCapture": "std",
+      "port": 9229,
+      "preLaunchTask": "deno purge"
+    }
+  ]
+}

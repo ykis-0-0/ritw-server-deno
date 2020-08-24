@@ -1,9 +1,11 @@
+import { ByFnSignature } from "./types.ts";
+
 export default function getDateString(folder: boolean = false, d: Date = new Date()): string{
 
-  let pp: (__: number) => ((_: string, $:number) => string);
-  
-  pp = (__ => (_, $) => ((d as any)[_]() + __).toString().padStart($, 0));
-  let p: (_: string, $: number) => string = pp(0);
+  const pp: (__: number) => ((_: keyof ByFnSignature<[], number, Date>, $:number) => string)
+  = (__ => (_, $) => (d[_]() + __).toString().padStart($, '0'));
+
+  const p: (_: keyof ByFnSignature<[], number, Date>, $: number) => string = pp(0);
 
   let rd: string[] = [
     d.getFullYear().toString(),

@@ -4,13 +4,18 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "run",
+            "label": "deno run",
             "type": "shell",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "command": "./start.sh",
+            "args": [
+                "run", "-A",
+                "--importmap=./importmap.json",
+                "--unstable", "${workspaceFolder}/src/index.ts"
+            ],
             "windows": {
                 "command": ".\\start.bat",
                 "options": {
@@ -18,6 +23,16 @@
                         "VSCODE": "VSCODE"
                     }
                 }
+            }
+        },
+        {
+            "label": "deno purge",
+            "type": "shell",
+            "command": "rm",
+            "args": ["-r", "${env:DENO_DIR}"],
+            "windows": {
+                "command": "Remove-Item",
+                "args": ["-Recurse", "${env:DENO_DIR}"]
             }
         }
     ]
