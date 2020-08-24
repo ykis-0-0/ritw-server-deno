@@ -24,6 +24,16 @@
                     }
                 }
             }
+        },
+        {
+            "label": "deno purge",
+            "type": "shell",
+            "command": "rm",
+            "args": ["-r", "${env:DENO_DIR}"],
+            "windows": {
+                "command": "Remove-Item",
+                "args": ["-Recurse", "${env:DENO_DIR}"]
+            }
         }
     ]
 }

@@ -13,7 +13,8 @@
         "--unstable", "${workspaceFolder}/src/index.ts"
       ],
       "outputCapture": "std",
-      "port": 9229
+      "port": 9229,
+      "preLaunchTask": "deno purge"
     }
   ]
 }
