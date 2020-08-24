@@ -4,13 +4,18 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "run",
+            "label": "deno run",
             "type": "shell",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "command": "./start.sh",
+            "args": [
+                "run", "-A",
+                "--importmap=./importmap.json",
+                "--unstable", "${workspaceFolder}/src/index.ts"
+            ],
             "windows": {
                 "command": ".\\start.bat",
                 "options": {
