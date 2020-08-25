@@ -9,12 +9,12 @@
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "run", "-A", "--inspect-brk",
-        "--importmap=./importmap.json",
+        "--importmap", "./importmap.json",
         "--unstable", "${workspaceFolder}/src/index.ts"
       ],
       "outputCapture": "std",
       "port": 9229,
-      "preLaunchTask": "deno purge"
+      //"preLaunchTask": "deno purge"
     }
   ]
 }
