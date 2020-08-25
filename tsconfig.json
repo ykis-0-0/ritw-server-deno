@@ -4,6 +4,7 @@
     "esModuleInterop": true,
     "noEmit": true,
     "checkJs": true,
-    "noErrorTruncation": true
+    "noErrorTruncation": true,
+    "lib": ["ESNext"]
   }
 }
