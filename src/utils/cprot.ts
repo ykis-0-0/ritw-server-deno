@@ -1,5 +1,8 @@
+type RtOne<F, T extends object>
+= F extends ((this: unknown, ...args: infer A) => infer R) ? ((this: T, ...args: A) => R) : F;
+
 export type ReThis<O extends object, T extends object> = {
-  [E in keyof O]: O[E] extends (this: void, ...args: infer A) => infer R ? (this: T, ...args: A) => R : O[E];
+  [E in keyof O]: RtOne<O[E], T>;
 }
 
 type PcdOptions<P extends object, Ipu extends object, Ipr extends object, A extends unknown[]> = {

@@ -1,3 +1,1 @@
-let handle = undefined;
-
-export default handle;
+export { default } from './dispatcher.ts';

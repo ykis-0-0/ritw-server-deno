@@ -8,7 +8,7 @@ import * as http from '$deno_std/http/mod.ts';
 
 // => local
 import registerLogger from './utils/logging/mod.ts';
-import handle from './server/mod.ts';
+import Dispatcher from './server/mod.ts';
 const server = http.serve({ port: 80 });
 
 import {Logger} from '$deno_std/log/logger.ts';
