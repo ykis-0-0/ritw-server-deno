@@ -87,20 +87,22 @@ function checkPath(path: typeof defaultHandler | string): void {
 let prot: ProtoDef<Dispatcher> = {
   handle: function(req) {
     let _url = req.url;
+    const privs_: DispatcherPrivate = priv.get(this[privates_]);
 
-    if(priv.get(this[privates_])[subordinateOf_] !== null) _url = _url.slice(priv.get(this[privates_])[subordinateOf_]?.length);
+    _url = _url.slice(privs_[subordinateOf_]?.length);
 
-    const matches: string[] = Object.keys(priv.get(this[privates_]).triggers).sort().reverse().filter(_ => _url.startsWith(_));
+    const matches: string[] = Object.keys(privs_.triggers).sort().reverse().filter(_ => _url.startsWith(_));
 
     for(const match of matches){
       req.dispatchedUrl = _url.slice(match.length);
-      if(priv.get(this[privates_]).triggers[match](req)) return true;
+      if(privs_.triggers[match](req)) return true;
     }
 
-    return ((priv.get(this[privates_]).triggers[defaultHandler]) ?? (_ => false))(req);
+    return ((privs_.triggers[defaultHandler]) ?? (_ => false))(req);
   },
   registerTrigger: function(path, handler) {
-    if(path in priv.get(this[privates_]).triggers) throw new ReferenceError('path already claimed');
+    const privs_ = priv.get(this[privates_]);
+    if(path in privs_.triggers) throw new ReferenceError('path already claimed');
 
     checkPath(path);
 
@@ -113,20 +115,21 @@ let prot: ProtoDef<Dispatcher> = {
       if(path === defaultHandler) throw new EvalError('so you said you know what you doing and show me this shit?');
 
       let $dispatch = handler as InstancePub<Dispatcher>;
-      if(priv.get($dispatch[privates_])[subordinateOf_] !== null)
+      if(privs_[subordinateOf_] !== null)
         throw new ReferenceError('dispatchers should not be mounted in two different paths');
 
-      priv.get($dispatch[privates_])[subordinateOf_] = (priv.get(this[privates_])[subordinateOf_] ?? '') + path;
+      priv.get($dispatch[privates_])[subordinateOf_] = (privs_[subordinateOf_] ?? '') + path;
 
       hook = $dispatch.handle.bind($dispatch);
     } else {
       hook = handler as typeof hook;
     }
-    priv.get(this[privates_]).triggers[path] = hook;
+    privs_.triggers[path] = hook;
   },
   dropTrigger: function(path) {
-    if(!(path in priv.get(this[privates_]).triggers)) throw new ReferenceError('path not claimed');
-    delete priv.get(this[privates_]).triggers[path];
+    const privs_ = priv.get(this[privates_]);
+    if(!(path in privs_.triggers)) throw new ReferenceError('path not claimed');
+    delete privs_.triggers[path];
   }
 };
 
