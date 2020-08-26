@@ -9,21 +9,34 @@ interface DispatcherRequest extends ServerRequest {
 }
 
 const privates_: unique symbol = Symbol('For private fields access');
+const priv = {
+  get(k: symbol): DispatcherPrivate {
+    return Reflect.get(this, k);
+  },
+  init(k: symbol): void {
+    const fields: DispatcherPrivate = {
+      triggers: {},
+      [subordinateOf_]: null
+    }
+    if(k in this) throw new ReferenceError('symbol clash!');
+    Reflect.set(this, k, fields);
+  }
+};
+
 const defaultHandler: unique symbol = Symbol('default handler for triggers');
 const subordinateOf_: unique symbol = Symbol('Marker of subordinate trigger');
 
 interface DispatcherPrivate {
   // => I think we don't have privates this time
+  triggers: {
+    [path: string]: (req: ServerRequest) => boolean;
+    [defaultHandler]?: (req: ServerRequest) => boolean;
+  };
+  [subordinateOf_]: string | null;
 }
 
 interface DispatcherPublic {
-  [privates_]: {
-    triggers: {
-      [path: string]: (req: ServerRequest) => boolean;
-      [defaultHandler]?: (req: ServerRequest) => boolean;
-    };
-    [subordinateOf_]: string | null;
-  }
+  [privates_]: symbol;
 }
 
 interface DispatcherProto {
@@ -41,10 +54,14 @@ interface DispatcherStatic {
 
 const Dispatcher = function(): void {
   if(!new.target) throw new SyntaxError('Please use new Dispatcher()');
+  this[privates_] = Symbol();
+  priv.init(this[privates_]);
+  /*
   this[privates_] = {
     triggers: {},
     [subordinateOf_]: null
   };
+  */
 } as ConstructorPrototype<Dispatcher>;
 
 function checkPath(path: typeof defaultHandler | string): void {
@@ -71,19 +88,19 @@ let prot: ProtoDef<Dispatcher> = {
   handle: function(req) {
     let _url = req.url;
 
-    if(this[privates_][subordinateOf_] !== null) _url = _url.slice(this[privates_][subordinateOf_]?.length);
+    if(priv.get(this[privates_])[subordinateOf_] !== null) _url = _url.slice(priv.get(this[privates_])[subordinateOf_]?.length);
 
-    const matches: string[] = Object.keys(this[privates_].triggers).sort().reverse().filter(_ => _url.startsWith(_));
+    const matches: string[] = Object.keys(priv.get(this[privates_]).triggers).sort().reverse().filter(_ => _url.startsWith(_));
 
     for(const match of matches){
       req.dispatchedUrl = _url.slice(match.length);
-      if(this[privates_].triggers[match](req)) return true;
+      if(priv.get(this[privates_]).triggers[match](req)) return true;
     }
 
-    return ((this[privates_].triggers[defaultHandler]) ?? (_ => false))(req);
+    return ((priv.get(this[privates_]).triggers[defaultHandler]) ?? (_ => false))(req);
   },
   registerTrigger: function(path, handler) {
-    if(path in this[privates_].triggers) throw new ReferenceError('path already claimed');
+    if(path in priv.get(this[privates_]).triggers) throw new ReferenceError('path already claimed');
 
     checkPath(path);
 
@@ -96,20 +113,20 @@ let prot: ProtoDef<Dispatcher> = {
       if(path === defaultHandler) throw new EvalError('so you said you know what you doing and show me this shit?');
 
       let $dispatch = handler as InstancePub<Dispatcher>;
-      if($dispatch[privates_][subordinateOf_] !== null)
+      if(priv.get($dispatch[privates_])[subordinateOf_] !== null)
         throw new ReferenceError('dispatchers should not be mounted in two different paths');
 
-      $dispatch[privates_][subordinateOf_] = (this[privates_][subordinateOf_] ?? '') + path;
+      priv.get($dispatch[privates_])[subordinateOf_] = (priv.get(this[privates_])[subordinateOf_] ?? '') + path;
 
       hook = $dispatch.handle.bind($dispatch);
     } else {
       hook = handler as typeof hook;
     }
-    this[privates_].triggers[path] = hook;
+    priv.get(this[privates_]).triggers[path] = hook;
   },
   dropTrigger: function(path) {
-    if(!(path in this[privates_].triggers)) throw new ReferenceError('path not claimed');
-    delete this[privates_].triggers[path];
+    if(!(path in priv.get(this[privates_]).triggers)) throw new ReferenceError('path not claimed');
+    delete priv.get(this[privates_]).triggers[path];
   }
 };
 
