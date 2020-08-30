@@ -29,8 +29,8 @@ const subordinateOf_: unique symbol = Symbol('Marker of subordinate trigger');
 interface DispatcherPrivate {
   // => I think we don't have privates this time
   triggers: {
-    [path: string]: (req: ServerRequest) => boolean;
-    [defaultHandler]?: (req: ServerRequest) => boolean;
+    [path: string]: (req: DispatcherRequest) => boolean;
+    [defaultHandler]?: (req: DispatcherRequest) => boolean;
   };
   [subordinateOf_]: string | null;
 }
