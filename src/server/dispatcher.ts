@@ -109,22 +109,19 @@ let prot: ProtoDef<Dispatcher> = {
     // TODO
     // => maybe think of a better solution?
     // => feelings this must have bugs of some sort.
-    let hook: (req: ServerRequest) => boolean;
-    if(handler instanceof Dispatcher){
+    if(handler instanceof (Dispatcher as CInstUnwrap<Dispatcher>)){
       if(handler === this) throw new EvalError('so we\'ve got a problem huh?');
       if(path === defaultHandler) throw new EvalError('so you said you know what you doing and show me this shit?');
 
-      let $dispatch = handler as InstancePub<Dispatcher>;
-      if(privs_[subordinateOf_] !== null)
+      if(priv.get(handler[privates_])[subordinateOf_] !== null)
         throw new ReferenceError('dispatchers should not be mounted in two different paths');
 
-      priv.get($dispatch[privates_])[subordinateOf_] = (privs_[subordinateOf_] ?? '') + path;
+      priv.get(handler[privates_])[subordinateOf_] = (privs_[subordinateOf_] ?? '') + path;
 
-      hook = $dispatch.handle.bind($dispatch);
-    } else {
-      hook = handler as typeof hook;
+      privs_.triggers[path] = handler.handle.bind(handler);
+      return;
     }
-    privs_.triggers[path] = hook;
+    privs_.triggers[path] = handler as Exclude<typeof handler, InstancePub<Dispatcher>>;
   },
   dropTrigger: function(path) {
     const privs_ = priv.get(this[privates_]);
@@ -133,10 +130,9 @@ let prot: ProtoDef<Dispatcher> = {
   }
 };
 
-
 Dispatcher.prototype = prot;
 
-const dispatchers: { [name: string]: InstancePrv<Dispatcher>;} = {};
+const dispatchers: { [name: string]: InstancePrv<Dispatcher>; } = {};
 
 const statics: DispatcherStatic = {
   defaultHandler,
