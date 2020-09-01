@@ -27,10 +27,9 @@ defLog.critical('critical');
 */
 
 for await(const req of server) {
-  logHttp.info(`/ ${req.method} ${req.url}`);
-  if(!cnt--){
-    break;
-  }
+  let res: http.Response | undefined = dispatchRoot.handle(req);
+  if(res === undefined) throw new ReferenceError('Final fallback from dispatcher not working');
+  req.respond(res);
 }
 logHttp.critical('Server shutting down');
 server.close();

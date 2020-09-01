@@ -1,8 +1,10 @@
-import { ServerRequest } from '$deno_std/http/mod.ts';
+import * as http from '$deno_std/http/mod.ts';
 
 //const dispatchers: {[name: string]: Dispatcher} = {};
 
-interface DispatcherRequest extends ServerRequest {
+type RequestExposure = 'url' | 'method' | 'proto' | 'protoMajor' | 'headers' | 'contentLength' | 'body';
+
+export interface DispatcherRequest extends Readonly<Pick<http.ServerRequest, RequestExposure>>   {
   dispatchedUrl?: string;
 }
 
@@ -26,15 +28,18 @@ function checkPath(path: string | typeof Dispatcher.defaultHandler): void {
 
 }
 
+type HandlerFn = (req: DispatcherRequest) => http.Response | undefined;
+
 export default class Dispatcher {
   #triggers: {
-    [path: string]: (req: DispatcherRequest) => boolean;
-    [Dispatcher.defaultHandler]?: (req: DispatcherRequest) => boolean;
+    [path: string]: HandlerFn;
+    [Dispatcher.defaultHandler]?: HandlerFn;
   }
   #subordinateOf: string | null;
+
   static readonly defaultHandler: unique symbol = Symbol('For private fields access');
   //@ts-ignore
-  static #dispatchers: {[name: string]: Dispatcher} = {}
+  //static #dispatchers: {[name: string]: Dispatcher} = {}
 
   constructor() {
     if(!new.target) throw new SyntaxError('Please use new Dispatcher()');
@@ -42,7 +47,7 @@ export default class Dispatcher {
     this.#subordinateOf = null;
   }
 
-  registerTrigger(path: string | typeof Dispatcher.defaultHandler, handler: ((req: DispatcherRequest) => boolean) | Dispatcher): void{
+  registerTrigger(path: string | typeof Dispatcher.defaultHandler, handler: HandlerFn | Dispatcher): void{
     if(path in this.#triggers) throw new ReferenceError('path already claimed');
 
     checkPath(path);
@@ -69,7 +74,7 @@ export default class Dispatcher {
     delete this.#triggers[path];
   }
 
-  handle(req: DispatcherRequest){
+  handle(req: DispatcherRequest): http.Response | undefined {
     let _url = req.url.slice(this.#subordinateOf?.length);
 
     const matches: string[] = Object.keys(this.#triggers)
@@ -77,15 +82,20 @@ export default class Dispatcher {
       .filter(_ => _url.startsWith(_));
     
     for(const match of matches){
+      let res: http.Response | undefined;
       req.dispatchedUrl = _url.slice(match.length);
-      if(this.#triggers[match](req)) return true;
+      if(res = this.#triggers[match](req)) return res;
     }
 
-    return (this.#triggers[Dispatcher.defaultHandler] ?? (_ => false))(req);
+    // not suborindate => dispatcherRoot
+    if(this.#subordinateOf === null) return { body: `${req.url} Not Found\nFallback Handler Not Found`, status: http.Status.NotFound };
+    return this.#triggers[Dispatcher.defaultHandler]?.(req);
   }
 
+  /*
   static getDispatcher(name: string): Dispatcher{
     if(!(name in Dispatcher.#dispatchers)) throw new ReferenceError('name not found');
     return Dispatcher.#dispatchers[name];
   }
+  */
 }
