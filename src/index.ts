@@ -8,7 +8,7 @@ import * as http from '$deno_std/http/mod.ts';
 
 // => local
 import registerLogger from './utils/logging/mod.ts';
-import Dispatcher from './server/mod.ts';
+import dispatchRoot from './server/mod.ts';
 
 const server = http.serve({ port: 80 });
 
@@ -18,11 +18,13 @@ const logHttp: Logger = registerLogger('http_server');
 let cnt: number = 10;
 
 const defLog: Logger = registerLogger('default');
+/*
 defLog.debug('debug');
 defLog.info('info');
 defLog.warning('warning');
 defLog.error('error');
 defLog.critical('critical');
+*/
 
 for await(const req of server) {
   logHttp.info(`/ ${req.method} ${req.url}`);
