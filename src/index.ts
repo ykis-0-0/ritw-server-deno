@@ -1,6 +1,6 @@
 debugger;
 // => std
-import * as http from '$deno_std/http/mod.ts';
+import * as http from 'std://http/mod.ts';
 
 // => 3rd Party
 //// @deno-types='https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/types/mustache/index.d.ts'
@@ -12,7 +12,7 @@ import dispatchRoot from './server/mod.ts';
 
 const server = http.serve({ port: 80 });
 
-import { Logger } from '$deno_std/log/logger.ts';
+import { Logger } from 'std://log/logger.ts';
 const logHttp: Logger = registerLogger('http_server');
 
 let cnt: number = 10;
