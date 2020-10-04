@@ -1,6 +1,6 @@
 import { BaseHandler } from 'std://log/handlers.ts';
-import { LogRecord } from 'std://log/logger.ts';
-import { LevelName } from 'std://log/levels.ts'
+import type { LogRecord } from 'std://log/logger.ts';
+import type { LevelName } from 'std://log/levels.ts'
 
 export default class MyConsoleHandler extends BaseHandler {
 

@@ -1,4 +1,4 @@
-import { ByFnSignature } from "./types.ts";
+import type { ByFnSignature } from "./typedefs/fn_filter.ts";
 
 export default function getDateString(folder: boolean = false, d: Date = new Date()): string{
 
