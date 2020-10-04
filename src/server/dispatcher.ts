@@ -1,4 +1,4 @@
-import * as http from '$deno_std/http/mod.ts';
+import * as http from 'std://http/mod.ts';
 
 //const dispatchers: {[name: string]: Dispatcher} = {};
 
@@ -79,7 +79,7 @@ export default class Dispatcher {
 
     const matches: string[] = Object.keys(this.#triggers)
       .sort().reverse()
-      .filter(_ => _url.startsWith(_));
+      .filter(String.prototype.startsWith.bind(_url));
     
     for(const match of matches){
       let res: http.Response | undefined;
@@ -88,7 +88,7 @@ export default class Dispatcher {
     }
 
     // not suborindate => dispatcherRoot
-    if(this.#subordinateOf === null) return { body: `${req.url} Not Found\nFallback Handler Not Found`, status: http.Status.NotFound };
+    if(this.#subordinateOf === null) return { body: `${req.url} Not Found\nFallback Handler Not Found`, status: http.Status.NotFound, headers: new Headers({ 'content-type': 'text/plain'}) };
     return this.#triggers[Dispatcher.defaultHandler]?.(req);
   }
 
