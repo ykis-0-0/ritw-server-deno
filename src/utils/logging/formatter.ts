@@ -1,8 +1,9 @@
 import * as colors from 'std://fmt/colors.ts';
+import type { LogRecord } from 'std://log/logger.ts';
 
 import getDateString from '../dstring_iso.ts'
 
-export default (isConsole: boolean) => function formatter(_: any): string {
+export default (isConsole: boolean) => function formatter(_: LogRecord): string {
   let 
     iden
       : <T, >(_: T) => T

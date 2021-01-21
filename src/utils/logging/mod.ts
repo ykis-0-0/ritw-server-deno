@@ -1,5 +1,5 @@
 import * as log from 'std://log/mod.ts';
-import type {Logger} from 'std://log/logger.ts';
+import type { Logger } from 'std://log/logger.ts';
 
 import getDateString from '../dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
