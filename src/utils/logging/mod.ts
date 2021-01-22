@@ -2,7 +2,7 @@ import * as log from 'std://log/mod.ts';
 
 import getDateString from '../dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
-import formatter from './formatter.ts';
+import formatter, { LOG_UNIT_PATH } from './formatter.ts';
 
 let date: string = getDateString(true);
 
@@ -70,7 +70,7 @@ export default function register(name: string, path: string | null = null) : log
         return Reflect.get(t, p, r);
       }
       return function(msg: unknown, ...args: unknown[]) {
-        Reflect.apply(t[p as 'debug' | 'info' | 'warning' | 'error' | 'critical'], t, [msg, path].concat(args));
+        Reflect.apply(t[p as 'debug' | 'info' | 'warning' | 'error' | 'critical'], t, [msg, ...args, {[LOG_UNIT_PATH]: path}]);
       }
     }
   })
