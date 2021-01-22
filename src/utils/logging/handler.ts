@@ -17,6 +17,7 @@ export default class MyConsoleHandler extends BaseHandler {
     return super.format(logRecord);
   }
 
+  // Mirrors `ConsoleHandler$log(:string)` from std://log/handlers.ts
   log(msg: string): void {
     console.log(msg);
   }
