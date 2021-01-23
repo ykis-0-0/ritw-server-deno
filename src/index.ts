@@ -12,7 +12,7 @@ import dispatchRoot from './server/mod.ts';
 
 const server = http.serve({ port: 80 });
 
-import { Logger } from 'std://log/logger.ts';
+import type { Logger } from 'std://log/logger.ts';
 const logHttp: Logger = registerLogger('http_server');
 
 let cnt: number = 10;
