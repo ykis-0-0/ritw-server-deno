@@ -1,21 +1,25 @@
-type OptionalPropNames<O extends object> = Exclude<{
-  [K in keyof O]: O extends Record<K, O[K]> ? never : K;
-}[keyof O], undefined>
+import * as Ops from './type_ops.ts';
 
-type UnionToIntersection<U> = (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
+type OptPropNames<O extends object> = {
+  [K in keyof O]-?: O extends {[_ in K]-?: O[_]} ? never : K;
+}[keyof O];
 
-// Wrap union in object to prevent early merging
-type OptionalCollection<O extends object> = UnionToIntersection<{
-  [K in OptionalPropNames<O>]-?: {
-    _: {
-      [K2 in K]: Exclude<O[K2] extends object ? StrictOptional<O[K2]> : O[K2], undefined>;
-    } | {}
+// Wrapped union in {_: T} to prevent early merging of branches
+type Optionals<O extends object> = Ops.UnionToIntersection<{
+  [K in OptPropNames<O>]: {
+    _: {[_ in K]: Required<O>[_] extends object ? StrictOptional<Required<O>[_]> : Required<O>[_];}
+     | {[_ in K]: never;};
   };
-}[OptionalPropNames<O>]>;
+}[OptPropNames<O>]>;
 
-// Will have error if we don't index it as a whole, dunno why tho
-type StrictOptional<O extends object> = ({_: {
-  [K in Exclude<keyof O, OptionalPropNames<O>>]: O[K] extends object ? StrictOptional<O[K]> : O[K];
-}} & OptionalCollection<O>)['_'];
+type NonOptionals<O extends object>
+   = keyof O extends OptPropNames<O>
+   ? {_: unknown} // Used `unknown` to prevent the `{}` from appearing
+   : {_: {[K in Exclude<keyof O, OptPropNames<O>>]: O[K] extends object ? StrictOptional<O[K]> : O[K];};};
+
+// Will have error if we don't wrap and index it as a whole, dunno why tho
+// Seems we still can't unwrap it in an earlier phase due to some mystic error
+// Looks like it's related to the early map and indexing of Optionals<>?
+type StrictOptional<O extends object> = (NonOptionals<O> & Optionals<O>)['_'];
 
 export default StrictOptional;
