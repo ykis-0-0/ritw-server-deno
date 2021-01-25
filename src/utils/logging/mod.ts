@@ -1,6 +1,6 @@
 import * as log from 'std://log/mod.ts';
 
-import getDateString from '../dstring_iso.ts';
+import getDateString from '::/utils/dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
 import formatter, { LOG_UNIT_PATH } from './formatter.ts';
 
