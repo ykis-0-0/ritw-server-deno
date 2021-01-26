@@ -1,4 +1,4 @@
-import type { PrefSchUser } from '::/utils/typedefs/schema_pref.ts';
+import type { PrefSchUser } from './schema.ts';
 
 const prefs: PrefSchUser = {
   // Preferences here
