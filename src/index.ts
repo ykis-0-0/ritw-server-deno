@@ -7,8 +7,9 @@ import * as http from 'std://http/mod.ts';
 //import * as mustache from 'https://github.com/janl/mustache.js/raw/master/mustache.mjs';
 
 // => local
-import registerLogger from './utils/logging/mod.ts';
+import registerLogger from '::/logging/mod.ts';
 import dispatchRoot from './server/mod.ts';
+import './shared.ts'
 
 const server = http.serve({ port: 80 });
 

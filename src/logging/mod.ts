@@ -1,9 +1,8 @@
 import * as log from 'std://log/mod.ts';
-import type {Logger} from 'std://log/logger.ts';
 
-import getDateString from '../dstring_iso.ts';
+import getDateString from '::/utils/dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
-import formatter from './formatter.ts';
+import formatter, { LOG_UNIT_PATH } from './formatter.ts';
 
 let date: string = getDateString(true);
 
@@ -61,17 +60,17 @@ await Deno.mkdir(`./logs/${date}`, {recursive: true});
 
 await log.setup(config);
 
-export default function register(logger: string, moduleName: string | null = null) : Logger{
+export default function register(name: string, path: string | null = null) : log.Logger{
   if(!(1 in arguments)) {
-    return log.getLogger(logger);
+    return log.getLogger(name);
   }
-  return new Proxy(log.getLogger(logger), {
-    get: function(t: Logger, p: string, r) {
+  return new Proxy(log.getLogger(name), {
+    get: function(t: log.Logger, p: string, r) {
       if(!['debug', 'info', 'warning', 'error', 'critical'].includes(p)) {
-        return Reflect.get(t, p, r)
+        return Reflect.get(t, p, r);
       }
       return function(msg: unknown, ...args: unknown[]) {
-        Reflect.apply(t[p as 'debug' | 'info' | 'warning' | 'error' | 'critical'], t, [msg, moduleName].concat(args))
+        Reflect.apply(t[p as 'debug' | 'info' | 'warning' | 'error' | 'critical'], t, [msg, ...args, {[LOG_UNIT_PATH]: path}]);
       }
     }
   })
