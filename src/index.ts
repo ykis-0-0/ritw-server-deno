@@ -10,6 +10,7 @@ import * as http from 'std://http/mod.ts';
 import registerLogger from '::/logging/mod.ts';
 import dispatchRoot from './server/mod.ts';
 
+await Deno.permissions.request({name: 'net'})
 const server = http.serve({ port: 80 });
 
 import type { Logger } from 'std://log/logger.ts';

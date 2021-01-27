@@ -27,7 +27,7 @@ let config: log.LogConfig = {
       formatter: formatter(false)
     }),
     fatal: new log.handlers.FileHandler('WARNING', {
-      filename: './error.log',
+      filename: './logs/error.log',
       mode: 'a',
       formatter: formatter(false)
     })
@@ -55,6 +55,9 @@ let config: log.LogConfig = {
     }
   }
 }
+
+// TODO make log root settable via perfs
+await Deno.permissions.request({name: 'write', path: './logs/'});
 
 await Deno.mkdir(`./logs/${date}`, {recursive: true});
 
