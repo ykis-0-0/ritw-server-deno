@@ -1,8 +1,8 @@
 {
   "deno.enable": true,
+  "deno.unstable": true,
   "deno.import_map": "./importmap.json",
   "debug.javascript.usePreview": false,
-  "terminal.integrated.shell.windows": null,
   "terminal.integrated.shellArgs.windows": [
     "-NoExit", "-File", "${workspaceFolder}\\.vscode\\deno_completions.ps1"
   ]

@@ -12,13 +12,17 @@
             },
             "command": "./start.sh",
             "args": [
-                "run", "-A",
+                "run", "-A", "--unstable", 
                 "--importmap=./importmap.json",
-                "--unstable", "${workspaceFolder}/src/index.ts"
+                "${workspaceFolder}/src/index.ts"
             ],
             "windows": {
-                "command": ".\\start.bat",
+                "command": "${workspaceFolder}\\start.bat",
                 "options": {
+                    "shell": {
+                        "executable": "cmd.exe",
+                        "args": ["/C", "CALL"]
+                    },
                     "env": {
                         "VSCODE": "VSCODE"
                     }
