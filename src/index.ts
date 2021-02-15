@@ -8,8 +8,8 @@ import * as http from 'std://http/mod.ts';
 
 // => local
 import registerLogger from '::/logging/mod.ts';
-import dispatchRoot from './server/mod.ts';
-import './shared.ts'
+import dispatchRoot from '::/server/mod.ts';
+import '::/prefs/shared.ts'
 
 const server = http.serve({ port: 80 });
 
@@ -19,6 +19,7 @@ const logHttp: Logger = registerLogger('http_server');
 let cnt: number = 10;
 
 const defLog: Logger = registerLogger('default');
+
 /*
 defLog.debug('debug');
 defLog.info('info');

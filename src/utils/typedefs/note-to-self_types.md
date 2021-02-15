@@ -1,0 +1,6 @@
+- Any is the TAINTING Top Type and a CANCER
+- Unknown is the TRUE Top Type (Universal Supertype)
+- Undefined is undefined
+- Null is null
+- Never is the empty set of types, precisely Bottom Type (Universal Subtype) <- (Nothing can be subtype of all types)
+- Void is the Unit Type (but undefined is assignable to it, and null if not under --strictNullChecks)

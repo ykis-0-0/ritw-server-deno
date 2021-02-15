@@ -19,12 +19,22 @@ type Optionals<O extends object> = Ops.UnionToIntersection<{
 
 type NonOptionals<O extends object>
    = keyof O extends OptPropNames<O>
-   ? {_: unknown} // Used `unknown` to prevent the `{}` from appearing
+   ? {_: unknown;} // Used `unknown` to prevent the `{}` from appearing
    : {_: {[K in Exclude<keyof O, OptPropNames<O>>]: O[K] extends object ? StrictOptional<O[K]> : O[K];};};
 
 // Will have error if we don't wrap and index it as a whole, dunno why tho
 // Seems we still can't unwrap it in an earlier phase due to some mystic error
 // Looks like it's related to the early map and indexing of Optionals<>?
-type StrictOptional<O extends object> = (NonOptionals<O> & Optionals<O>)['_'];
+/**
+ * Enforces a 'Exact or not Exist' restrictions on Optional entries in Objects.
+ * 
+ * - Primitives, Symbols Functions, and Arrays(e.g. `T[]`): refuses to apply directly,  
+ *     but will return itself if presented as a property within objects
+ * - Tuples (e.g. `[A, B?, C?, ...Z[]]`): shall split into  
+ *       ([A, ...Z[]] | [A, B, C, ...Z[]])
+ * - Objects (e.g. `type obj = {a: A, b?: B, c: {c1: C1, c2: C2?}}`):
+ *       {a: A, c: StrictOptional<obj['c']>} & ({b: B} | {b: never})
+ */
+type StrictOptional<O extends object> = (Optionals<O> & NonOptionals<O>)['_'];
 
 export default StrictOptional;
