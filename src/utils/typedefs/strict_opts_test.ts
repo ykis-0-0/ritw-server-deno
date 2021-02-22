@@ -1,4 +1,4 @@
-import SO, { Optionals } from './so_v2.ts';
+import SO, { Optionals } from './strict_opts.ts';
 
 // ? Primitives => Throws due to `extends object` constraint
 /*
