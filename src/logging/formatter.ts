@@ -1,5 +1,5 @@
-import * as colors from 'std://fmt/colors.ts';
-import type { LogRecord } from 'std://log/logger.ts';
+import * as colors from '::std/fmt/colors.ts';
+import type { LogRecord } from '::std/log/logger.ts';
 
 import getDateString from '::/utils/dstring_iso.ts'
 

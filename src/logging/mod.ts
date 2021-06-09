@@ -1,4 +1,4 @@
-import * as log from 'std://log/mod.ts';
+import * as log from '::std/log/mod.ts';
 
 import getDateString from '::/utils/dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
