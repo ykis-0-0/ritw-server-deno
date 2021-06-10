@@ -1,9 +1,9 @@
-import type * as path from 'std://path/mod.ts';
+import type * as path from '::std/path/mod.ts';
 
 // @deno-types='https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/types/mustache/index.d.ts'
-import mustache from 'https://github.com/janl/mustache.js/raw/master/mustache.mjs';
+import mustache from 'https://github.com/janl/mustache.js/raw/master/mustache.js';
 
-import type { DispatcherRequest } from '../dispatcher.ts';
+import type { DispatcherRequest } from '::/server/dispatcher.ts';
 
 class MustacheBuilder {
   constructor(dir: path.ParsedPath){
