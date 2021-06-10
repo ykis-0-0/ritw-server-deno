@@ -24,7 +24,7 @@ function checkPath(path: string | typeof Dispatcher.defaultHandler): void {
     ...'0123456489', ...'-._~', ...'!$'
   ];
 
-  if(![...path].slice(1).every(_ => pchars.includes(_))) throw new SyntaxError('path contain illegal characters, and should only be 1-deep');
+  if([...path].slice(1).some(_ => !pchars.includes(_))) throw new SyntaxError('path contain illegal characters, and should only be 1-deep');
 
 }
 
@@ -37,7 +37,7 @@ export default class Dispatcher {
   }
   #subordinateOf: string | null;
 
-  static readonly defaultHandler: unique symbol = Symbol('For private fields access');
+  static readonly defaultHandler: unique symbol = Symbol('Symbol for marking the default handler for this Dispatcher');
   //@ts-ignore
   //static #dispatchers: {[name: string]: Dispatcher} = {}
 
