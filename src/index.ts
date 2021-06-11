@@ -9,7 +9,6 @@ import * as http from '::std/http/mod.ts';
 // => local
 import registerLogger from '::/logging/mod.ts';
 import dispatchRoot from './server/mod.ts';
-import './shared.ts'
 
 await Deno.permissions.request({name: 'net'})
 const server = http.serve({ port: 80 });

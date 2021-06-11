@@ -4,7 +4,12 @@ import getDateString from '::/utils/dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
 import formatter, { LOG_UNIT_PATH } from './formatter.ts';
 
+import loggingPrefs from './prefs/defaults.ts';
+
+await Deno.permissions.request({name: 'write', path: loggingPrefs.logRoot});
+
 let date: string = getDateString(true);
+await Deno.mkdir(`./logs/${date}`, {recursive: true});
 
 let config: log.LogConfig = {
   handlers: {
@@ -54,12 +59,7 @@ let config: log.LogConfig = {
       handlers: ['file']
     }
   }
-}
-
-// TODO make log root settable via perfs
-await Deno.permissions.request({name: 'write', path: './logs/'});
-
-await Deno.mkdir(`./logs/${date}`, {recursive: true});
+};
 
 await log.setup(config);
 
