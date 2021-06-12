@@ -2,7 +2,27 @@
   "deno.enable": true,
   "deno.unstable": true,
   "deno.importMap": "./importmap.json",
-  "terminal.integrated.shellArgs.windows": [
-    "-NoExit", "-File", "${workspaceFolder}\\.vscode\\deno_completions.ps1"
-  ]
+  "terminal.integrated.defaultProfile.windows": "PowerShell_deno",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell_deno": {
+      "source": "PowerShell",
+      "icon": "terminal",
+      "args": ["-NoExit", "-File", "${workspaceFolder}\\.vscode\\deno_completions.ps1"]
+    },
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    },
+    "Command Prompt": {
+      "path": [
+        "${env:windir}\\Sysnative\\cmd.exe",
+        "${env:windir}\\System32\\cmd.exe"
+      ],
+      "args": [],
+      "icon": "terminal-cmd"
+    },
+    "Git Bash": {
+      "source": "Git Bash"
+    }
+  }
 }
