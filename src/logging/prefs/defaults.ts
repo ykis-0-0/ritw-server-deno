@@ -1,5 +1,5 @@
-import type {NoNullableProps, OnlyNullableProps} from '::/utils/typedefs/schemas.ts'
-import type LoggingSchema from './schema.ts';
+import type { NoNullableProps, OnlyNullableProps } from '::/utils/typedefs/schemas.ts'
+import type { Schema } from './schema.ts';
 
 let loggingDefaults: OnlyNullableProps<LoggingSchema> = {
   //logRoot: './logs/',

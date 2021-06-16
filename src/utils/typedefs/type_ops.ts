@@ -4,3 +4,5 @@ export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) ex
 
 // Does it still useful?
 export type NonEmpty<O extends object> = O extends infer T ? keyof T extends never ? never : T : never;
+
+export type BasicEq<L, R, O> = (() => L) extends (() => R) ? ((() => R) extends (() => L) ? O : never) : never;
