@@ -1,12 +1,13 @@
-import type {NoNullableProps, OnlyNullableProps} from '::/utils/typedefs/schemas.ts'
-import type GeneralSchema from './schema.ts';
+import type { NoNullableProps, OnlyNullableProps } from '::/utils/typedefs/schemas.ts'
+import type { Schema } from './schema.ts';
 
-let generalDefaults: OnlyNullableProps<GeneralSchema> = {
+export const defaults: OnlyNullableProps<Schema> = {
   //serverPort: 80,
 }
-
+/*
 import userPrefs from '::/prefs_exts/general.ts';
 
-let finalPref: Readonly<GeneralSchema> = Object.assign({}, generalDefaults, userPrefs);
+let finalPref: Readonly<GeneralSchema> = Object.assign({}, defaults, userPrefs);
 
 export default finalPref;
+*/
