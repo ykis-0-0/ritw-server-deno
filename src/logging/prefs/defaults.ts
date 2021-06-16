@@ -4,8 +4,8 @@ import type LoggingSchema from './schema.ts';
 let loggingDefaults: OnlyNullableProps<LoggingSchema> = {
   //logRoot: './logs/',
 }
+import userPrefs from '::/prefs/logging.ts';
 
-import userPrefs from '::/prefs_exts/logging.ts';
 
 let finalPref: Readonly<LoggingSchema> = Object.assign({}, loggingDefaults, userPrefs);
 
