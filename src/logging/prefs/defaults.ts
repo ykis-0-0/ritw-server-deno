@@ -1,9 +1,9 @@
-import type { NoNullableProps, OnlyNullableProps } from '::/utils/typedefs/schemata.ts'
+import type { ObjEnsureSomeOrReallyNothing } from '::/utils/typedefs/schemata.ts'
 import type { Schema } from './schema.ts';
 
-export const defaults: OnlyNullableProps<Schema> = {
+export const defaults: ObjEnsureSomeOrReallyNothing<Schema> = {
   //logRoot: './logs/',
-}
+};
 /*
 import userPrefs from '::/prefs/logging.ts';
 
