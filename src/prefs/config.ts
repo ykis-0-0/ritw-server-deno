@@ -1,16 +1,16 @@
 import type * as Schema from '::/prefs/schemata.ts';
 
-/**/export/**/ const General: Schema.General = {
+const general: Schema.General = {
   serverPort: 80,
 };
 
-/**/export/**/ const Logging: Schema.Logging = {
+const logging: Schema.Logging = {
   logRoot: './logs/',
 };
 
-/*
-export {
+const configs: Schema.TheSchema = {
   general,
-  logging
-};
-/**/
+  logging,
+} as const;
+
+export default configs;
