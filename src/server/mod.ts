@@ -1,6 +1,6 @@
 import Dispatcher from './dispatcher.ts';
 
-import frontsiteHnd from './endpoints/frontpage.ts';
+import frontsiteHnd from '::/endpoints/website/frontpage.ts';
 
 const dispatchRoot = new Dispatcher();
 
