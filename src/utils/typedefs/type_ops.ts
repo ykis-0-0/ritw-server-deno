@@ -17,4 +17,11 @@ export type BasicEq<L, R, O> = (() => L) extends (() => R) ? ((() => R) extends 
  */
 export type ReallyEmptyObject = {
   [K in string | number | symbol]: never;
-}
+};
+
+/**
+ * Basically the inverse of `Readonly<>`
+ */
+export type AllWritable<O extends object> = {
+  -readonly [K in keyof O]: O[K];
+};
