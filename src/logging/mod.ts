@@ -4,7 +4,8 @@ import getDateString from '::/utils/dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
 import formatter, { LOG_UNIT_PATH } from './formatter.ts';
 
-import loggingPrefs from './prefs/defaults.ts';
+import prefs from '::/prefs/mod.ts';
+const loggingPrefs = prefs.logging;
 
 await Deno.permissions.request({name: 'write', path: loggingPrefs.logRoot});
 

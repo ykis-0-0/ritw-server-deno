@@ -11,8 +11,9 @@ import registerLogger from '::/logging/mod.ts';
 import dispatchRoot from './server/mod.ts';
 
 await Deno.permissions.request({name: 'net'})
-import generalPref from '::/prefs/general/defaults.ts';
-const server = http.serve({ port: generalPref.serverPort });
+import prefs from '::/prefs/mod.ts';
+const generalPrefs = prefs.general;
+const server = http.serve({ port: generalPrefs.serverPort });
 
 import type { Logger } from '::std/log/logger.ts';
 const logHttp: Logger = registerLogger('http_server');
