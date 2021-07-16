@@ -1,47 +1,30 @@
 import * as path from '::std/path/mod.ts';
-import { AllWritable } from './typedefs/type_ops.ts';
-import { ObjectDefineProperty } from './typedefs/defprop.ts';
 
-const BASE_PATH = Symbol('Reference base path for paths');
+const anchor = new (class {
 
-type This = {
-  //@ts-expect-error
-  anchor?: (this: AllWritable<This>, mainModulePath: string) => asserts this is Omit<This, 'anchor'>;
-  rebase: (this: Omit<This, 'anchor'>, href: string) => string;
-  readonly [BASE_PATH]: string;
-}
+  readonly #BASE_PATH: string | null = null; // readonlyed to prevent accidental assignment
 
-const theAnchor: Omit<This, typeof BASE_PATH> = {
-  anchor: function(this, mainModulePath) {
-    if(!path.isAbsolute(mainModulePath)) throw new TypeError('Absolute path required');
-    this[BASE_PATH] = mainModulePath;
-    delete this.anchor;
-  },
-  rebase: function(this, href){
-    const rtv = path.join(this[BASE_PATH], href);
-    console.log(`@ ${rtv}`);
-    if(!rtv.startsWith(this[BASE_PATH])) throw new EvalError('Resolved path escaped from base');
+  get #basePath() {
+    if(this.#BASE_PATH === null) throw new ReferenceError('Still floating');
+    return this.#BASE_PATH
+  }
+
+  set #basePath(value) {
+    if(this.#BASE_PATH !== null) throw new ReferenceError('Already settled');
+    //@ts-expect-error it's the only exception
+    this.#BASE_PATH = value;
+  }
+
+  anchor(mainModulePath: string) {
+    if(this.#basePath !== null) throw new ReferenceError('Already anchored');
+    this.#basePath = mainModulePath;
+  }
+
+  rebase(href: string){
+    const rtv = path.join(this.#basePath, href);
+    if(!rtv.startsWith(this.#basePath)) throw new EvalError('Resolved path escaped from base');
     return rtv;
   }
-};
+})();
 
-const defProp: ObjectDefineProperty = Object.defineProperty;
-const setter: (this: Omit<This, typeof BASE_PATH>, _path: string) => void = function(this, _path){
-  const desc = {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: path.join(path.dirname(_path), '../')
-  };
-  defProp(this, BASE_PATH, desc);
-  console.log(`=> ${_path}\n=> ${desc.value}\n=> ${this[BASE_PATH]}`);
-};
-
-defProp(theAnchor, BASE_PATH, {
-  configurable: true,
-  enumerable: false,
-  get: function(){ throw new ReferenceError('Anchor Base is not yet defined'); },
-  set: setter,
-});
-
-export default theAnchor;
+export default anchor;
