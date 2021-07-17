@@ -1,10 +1,15 @@
 import * as log from '::std/log/mod.ts';
+import * as path from '::std/path/mod.ts';
 
 import getDateString from '::/utils/dstring_iso.ts';
+import theAnchor from '::/utils/anchor.ts';
+import prefs from '::/prefs/mod.ts';
+
+import type { Schema as LoggingPrefs } from './prefs/schema.ts';
+
 import MyConsoleHandler from './handler.ts';
 import formatter, { LOG_UNIT_PATH } from './formatter.ts';
 
-import prefs from '::/prefs/mod.ts';
 const loggingPrefs = prefs.logging;
 
 await Deno.permissions.request({name: 'write', path: loggingPrefs.logRoot});
