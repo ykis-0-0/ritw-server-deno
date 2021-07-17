@@ -23,6 +23,7 @@ await Deno.mkdir(logDir, {recursive: true});
 
 let config: log.LogConfig = {
   handlers: {
+    //@ts-expect-error an temporary workaround
     console: new MyConsoleHandler('DEBUG', {
       formatter: formatter(true)
     }),
