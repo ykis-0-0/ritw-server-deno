@@ -1,4 +1,13 @@
 debugger;
+
+/* Providing a base for the relative paths, setting to the directory containing this file */
+import theAnchor from '::/utils/anchor.ts';
+// We need to be running as the Main module.
+if(!import.meta.main) {
+  throw new EvalError('This is intended to be loaded as main module.');
+}
+theAnchor.anchor(import.meta.url);
+
 // => std
 import * as http from '::std/http/mod.ts';
 

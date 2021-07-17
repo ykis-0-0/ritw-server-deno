@@ -10,12 +10,16 @@ import type { Schema as LoggingPrefs } from './prefs/schema.ts';
 import MyConsoleHandler from './handler.ts';
 import formatter, { LOG_UNIT_PATH } from './formatter.ts';
 
-const loggingPrefs = prefs.logging;
+const loggingPrefs: LoggingPrefs = prefs.logging;
 
-await Deno.permissions.request({name: 'write', path: loggingPrefs.logRoot});
+const absLogDir = theAnchor.rebase(loggingPrefs.logRoot);
+await Deno.permissions.request({name: 'write', path: absLogDir});
 
 let date: string = getDateString(true);
-await Deno.mkdir(`./logs/${date}`, {recursive: true});
+
+let logDir: string = `${absLogDir}/${date}`;
+
+await Deno.mkdir(logDir, {recursive: true});
 
 let config: log.LogConfig = {
   handlers: {
