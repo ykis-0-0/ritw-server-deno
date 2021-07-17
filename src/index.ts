@@ -1,4 +1,13 @@
 debugger;
+
+/* Providing a base for the relative paths, setting to the directory containing this file */
+import theAnchor from '::/utils/anchor.ts';
+// We need to be running as the Main module.
+if(!import.meta.main) {
+  throw new EvalError('This is intended to be loaded as main module.');
+}
+theAnchor.anchor(import.meta.url);
+
 // => std
 import * as http from '::std/http/mod.ts';
 
@@ -11,7 +20,9 @@ import registerLogger from '::/logging/mod.ts';
 import dispatchRoot from './server/mod.ts';
 
 await Deno.permissions.request({name: 'net'})
-const server = http.serve({ port: 80 });
+import prefs from '::/prefs/mod.ts';
+const generalPrefs = prefs.general;
+const server = http.serve({ port: generalPrefs.serverPort });
 
 import type { Logger } from '::std/log/logger.ts';
 const logHttp: Logger = registerLogger('http_server');
