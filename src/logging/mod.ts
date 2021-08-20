@@ -64,15 +64,13 @@ export async function init(logRoot: string): Promise<void> {
   return await log.setup(config);
 }
 
-export default function register(name: string, path: string | null = null) : log.Logger{
-  if(!(1 in arguments)) {
-    return log.getLogger(name);
-  }
+export default function registerLogger(name: string, path: string | null = null) : log.Logger{
+  if(!(1 in arguments)) return log.getLogger(name);
+
   return new Proxy(log.getLogger(name), {
     get: function(t: log.Logger, p: string, r) {
-      if(!['debug', 'info', 'warning', 'error', 'critical'].includes(p)) {
-        return Reflect.get(t, p, r);
-      }
+      if(!['debug', 'info', 'warning', 'error', 'critical'].includes(p)) return Reflect.get(t, p, r);
+
       return function(msg: unknown, ...args: unknown[]) {
         Reflect.apply(t[p as 'debug' | 'info' | 'warning' | 'error' | 'critical'], t, [msg, ...args, {[LOG_UNIT_PATH]: path}]);
       }
