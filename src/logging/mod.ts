@@ -6,13 +6,18 @@ import getDateString from '::/utils/dstring_iso.ts';
 import MyConsoleHandler from './handler.ts';
 import formatter, { LOG_UNIT_PATH } from './formatter.ts';
 
+const storageFlag = 'LOG_WAITING_INIT';
 
+window.sessionStorage.setItem(storageFlag, ''); // value is not important here
 
-let date: string = getDateString(true);
+export async function init(logRoot: string): Promise<void> {
+  if(window.sessionStorage.getItem(storageFlag) === null) throw ReferenceError('Log config already set');
+  window.sessionStorage.removeItem(storageFlag);
 
-let logDir: string = `${absLogDir}/${date}`;
+  let date: string = getDateString(true);
+  let logDir: string = path.join(logRoot, date);
+  await Deno.mkdir(logDir, { recursive: true });
 
-await Deno.mkdir(logDir, {recursive: true});
 
 let config: log.LogConfig = {
   handlers: {
@@ -65,7 +70,9 @@ let config: log.LogConfig = {
   }
 };
 
-await log.setup(config);
+
+  return await log.setup(config);
+}
 
 export default function register(name: string, path: string | null = null) : log.Logger{
   if(!(1 in arguments)) {
