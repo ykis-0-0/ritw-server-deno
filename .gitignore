@@ -1,0 +1,5 @@
+/logs
+/deno_modules
+error.log
+deno.exe
+deno.old.exe

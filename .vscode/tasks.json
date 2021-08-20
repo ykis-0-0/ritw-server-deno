@@ -1,0 +1,45 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "label": "deno run",
+          "type": "shell",
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "command": "./start.sh",
+          "args": [
+              "run",
+              "--import-map", "./importmap.json",
+              //"--allow-all",
+              //"--unstable",
+              "${workspaceFolder}/src/index.ts"
+          ],
+          "windows": {
+              "command": "${workspaceFolder}\\start.bat",
+              "options": {
+                  "shell": {
+                      "executable": "cmd.exe",
+                      "args": ["/C", "CALL"]
+                  },
+                  "env": {
+                      "VSCODE": "VSCODE"
+                  }
+              }
+          }
+      },
+      {
+          "label": "deno purge",
+          "type": "shell",
+          "command": "rm",
+          "args": ["-r", "${env:DENO_DIR}"],
+          "windows": {
+              "command": "Remove-Item",
+              "args": ["-Recurse", "-Force", "${env:DENO_DIR}"]
+          }
+      }
+  ]
+}

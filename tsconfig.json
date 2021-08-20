@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "noEmit": true,
+    "checkJs": true,
+    "noErrorTruncation": true,
+    "lib": ["ESNext"]
+  }
+}
