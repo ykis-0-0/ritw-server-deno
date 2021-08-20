@@ -14,8 +14,8 @@ export async function init(logRoot: string): Promise<void> {
   if(window.sessionStorage.getItem(storageFlag) === null) throw ReferenceError('Log config already set');
   window.sessionStorage.removeItem(storageFlag);
 
-  let date: string = getDateString(true);
-  let logDir: string = path.join(logRoot, date);
+  const datetime = getDateString(true);
+  const logDir = path.join(logRoot, datetime);
   await Deno.mkdir(logDir, { recursive: true });
 
   const handlers: Required<log.LogConfig>['handlers'] = {
@@ -56,14 +56,6 @@ export async function init(logRoot: string): Promise<void> {
     apis: {
       level: 'DEBUG',
       handlers: ['console', 'file_apis', 'fatal']
-    },
-    console: {
-      level: 'DEBUG',
-      handlers: ['console']
-    },
-    file: {
-      level: 'DEBUG',
-      handlers: ['file']
     }
   };
 
