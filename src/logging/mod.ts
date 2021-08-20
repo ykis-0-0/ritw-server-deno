@@ -18,35 +18,33 @@ export async function init(logRoot: string): Promise<void> {
   let logDir: string = path.join(logRoot, date);
   await Deno.mkdir(logDir, { recursive: true });
 
-
-let config: log.LogConfig = {
-  handlers: {
-    //@ts-expect-error an temporary workaround
+  const handlers: Required<log.LogConfig>['handlers'] = {
     console: new MyConsoleHandler('DEBUG', {
       formatter: formatter(true)
     }),
     file: new log.handlers.FileHandler('DEBUG', {
-      filename: `./logs/${date}/default.log`,
+      filename: path.join(logDir, 'default.log'),
       mode: 'x',
       formatter: formatter(false)
     }),
     file_http: new log.handlers.FileHandler('DEBUG', {
-      filename: `./logs/${date}/http_server.log`,
+      filename: path.join(logDir, 'http_server.log'),
       mode: 'x',
       formatter: formatter(false)
     }),
     file_api: new log.handlers.FileHandler('DEBUG', {
-      filename: `./logs/${date}/apis.log`,
+      filename: path.join(logDir, 'apis.log'),
       mode: 'x',
       formatter: formatter(false)
     }),
     fatal: new log.handlers.FileHandler('WARNING', {
-      filename: './logs/error.log',
+      filename: path.join(logRoot, 'error.log'),
       mode: 'a',
       formatter: formatter(false)
     })
-  },
-  loggers: {
+  };
+
+  const loggers: Required<log.LogConfig>['loggers'] = {
     default: {
       level: 'DEBUG',
       handlers: ['console', 'file', 'fatal']
@@ -67,9 +65,9 @@ let config: log.LogConfig = {
       level: 'DEBUG',
       handlers: ['file']
     }
-  }
-};
+  };
 
+  const config: log.LogConfig = { handlers, loggers };
 
   return await log.setup(config);
 }
