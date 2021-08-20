@@ -69,10 +69,11 @@ export default function registerLogger(name: string, path: string | null = null)
 
   return new Proxy(log.getLogger(name), {
     get: function(t: log.Logger, p: string, r) {
+      type possibleLevels = Lowercase<Exclude<log.LevelName, 'NOTSET'>>;
       if(!['debug', 'info', 'warning', 'error', 'critical'].includes(p)) return Reflect.get(t, p, r);
 
       return function(msg: unknown, ...args: unknown[]) {
-        Reflect.apply(t[p as 'debug' | 'info' | 'warning' | 'error' | 'critical'], t, [msg, ...args, {[LOG_UNIT_PATH]: path}]);
+        Reflect.apply(t[p as possibleLevels], t, [msg, ...args, {[LOG_UNIT_PATH]: path}]);
       }
     }
   })
