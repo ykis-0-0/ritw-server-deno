@@ -27,7 +27,10 @@ import * as Oak from 'Oak/mod.ts';
 
 import { grandRouter } from './endpoints/mod.ts';
 
-const app = new Oak.Application();
+const app = new Oak.Application({
+  serverConstructor: Oak.HttpServerNative,
+});
+export const abortCtrl = new AbortController();
 
 app.use(grandRouter.routes());
 app.use(grandRouter.allowedMethods());
@@ -35,10 +38,14 @@ app.use(grandRouter.allowedMethods());
 //! Port settings
 const serveOptions: Oak.ListenOptions = {
   port: 8080,
-  //todo signal: ??
+  signal: abortCtrl.signal,
 }
 const servePromise = app.listen(serveOptions);
 
 baseLogger.info(`Server started at port ${ serveOptions.port }.`);
 
 await servePromise;
+
+baseLogger.info('Server stopped. Exiting.');
+
+Deno.exit();
