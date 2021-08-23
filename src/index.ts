@@ -4,34 +4,14 @@ debugger;
 // We need to be running as the Main module.
 if(!import.meta.main) throw new EvalError('This is intended to be loaded as main module.');
 
-// => std.path for canonicalizing code paths
-import * as path from '::std/path/mod.ts';
+import { elevate, roots } from '::/utils/elevator.ts';
 
-//! Configuration of directories
-console.info('Acquiring access for directories, please check if the location matches.');
-const srcRoot = path.dirname(path.fromFileUrl(import.meta.url)); // Deno.mainModule will need permissions, which we don't want to ask for
-const logRoot = path.join(srcRoot, '..', 'logs/');
-const pagesRoot = path.join(srcRoot, '..', 'pages/');
-const assetRoot = path.join(srcRoot, '..', 'assets/');
-
-const questions: { permDesc: Deno.PermissionDescriptor; reason?: string;}[] = [
-  { permDesc: { name: 'write', path: logRoot }, reason: 'log storage'},
-  { permDesc: { name: 'read', path: pagesRoot }, reason: 'site pages'},
-  { permDesc: { name: 'read', path: assetRoot }, reason: 'static assets'},
-  { permDesc: { name: 'net'}, reason: 'hosting the server'},
-];
-for (const el of questions){
-  console.info(`${el.permDesc.name.toUpperCase()} access${'path' in el.permDesc ? ` at ${el.permDesc.path}` : ''} is required${'reason' in el ? ` for ${el.reason}` : ''}.`);
-  const permStatus = await Deno.permissions.request(el.permDesc);
-  if(permStatus.state === 'granted') continue;
-
-  console.error('Access is denied, exiting.');
-  Deno.exit(1);
-}
+console.info('Acquiring permissions, please check if the descriptors match.');
+await elevate(import.meta.url);
 //#endregion Init & Perms Acq.
 
 import retrieveLogger, { init as loggerInit } from '::/logging/mod.ts';
-await loggerInit(logRoot);
+await loggerInit(roots.logRoot);
 const baseLogger = retrieveLogger('default');
 
 /*
