@@ -30,9 +30,9 @@ for (const el of questions){
 }
 //#endregion Init & Perms Acq.
 
-import registerLogger, { init } from '::/logging/mod.ts';
-await init(logRoot);
-const baseLogger = registerLogger('default');
+import retrieveLogger, { init as loggerInit } from '::/logging/mod.ts';
+await loggerInit(logRoot);
+const baseLogger = retrieveLogger('default');
 
 /*
 baseLogger.debug('debug');

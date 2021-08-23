@@ -64,7 +64,7 @@ export async function init(logRoot: string): Promise<void> {
   return await log.setup(config);
 }
 
-export default function registerLogger(name: string, path: string | null = null) : log.Logger{
+export default function retrieveLogger(name: string, path: string | null = null) : log.Logger{
   if(!(1 in arguments)) return log.getLogger(name);
 
   return new Proxy(log.getLogger(name), {
