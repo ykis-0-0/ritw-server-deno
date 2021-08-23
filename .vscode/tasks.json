@@ -14,7 +14,7 @@
           "args": [
               "run",
               "--import-map", "./importmap.json",
-              //"--allow-all",
+              "--allow-all",
               //"--unstable",
               "${workspaceFolder}/src/index.ts"
           ],

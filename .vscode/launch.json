@@ -10,15 +10,18 @@
       "program": "${workspaceFolder}/src/index.ts",
       "runtimeArgs": [
         "run",
-        "--inspect-brk=127.0.0.1:9229",
+        "--inspect=127.0.0.1:9229",
         "--import-map", "./importmap.json",
-        //"--allow-all",
+        "--allow-all",
         //"--unstable",
       ],
       "attachSimplePort": 9229,
       "outputCapture": "std",
-      "console": "internalConsole"
-      //"preLaunchTask": "deno purge"
+      "console": "internalConsole",
+      //"preLaunchTask": "deno purge",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/src/**",
+      ]
     }
   ]
 }

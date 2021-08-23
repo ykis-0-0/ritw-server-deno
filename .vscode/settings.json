@@ -19,5 +19,5 @@
       "icon": "terminal-cmd"
     },
   },
-  "terminal.integrated.defaultProfile.windows": "PowerShell"
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
 }
