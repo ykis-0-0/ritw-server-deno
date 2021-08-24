@@ -40,7 +40,7 @@ import { retrieveLogger } from '::/logging/mod.ts';
 
 router.get('/stop', async (ctx, next) => {
 
-  const baseLogger = await retrieveLogger('default');
+  const baseLogger = await retrieveLogger('http_server', ['/stop']);
 
   ctx.response.body = 'Stopping Server';
 
