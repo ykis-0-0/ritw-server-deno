@@ -30,7 +30,8 @@ import { grandRouter } from './endpoints/mod.ts';
 const app = new Oak.Application({
   serverConstructor: Oak.HttpServerNative,
 });
-export const abortCtrl = new AbortController();
+
+import { signal as abortSignal } from '::/utils/abort_ctrl.ts';
 
 app.use(grandRouter.routes());
 app.use(grandRouter.allowedMethods());
@@ -38,7 +39,7 @@ app.use(grandRouter.allowedMethods());
 //! Port settings
 const serveOptions: Oak.ListenOptions = {
   port: 8080,
-  signal: abortCtrl.signal,
+  signal: abortSignal,
 }
 const servePromise = app.listen(serveOptions);
 
