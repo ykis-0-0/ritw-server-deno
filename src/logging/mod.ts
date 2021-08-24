@@ -10,6 +10,11 @@ const storageFlag = 'LOG_WAITING_INIT';
 
 window.sessionStorage.setItem(storageFlag, ''); // value is not important here
 
+/** I think `(value: Partial<Parameters<Parameters<ConstructorParameters<PromiseConstructor>[0]>[0]>>) => void` isn't a good idea? */
+let loggerOk: (value?: unknown) => void;
+let loggerThrow: Parameters<ConstructorParameters<PromiseConstructor>[0]>[1];
+const logUsable = new Promise((resolve, reject) => [loggerOk, loggerThrow] = [resolve, reject]);
+
 export async function init(logRoot: string): Promise<void> {
   if(window.sessionStorage.getItem(storageFlag) === null) throw ReferenceError('Log config already set');
   window.sessionStorage.removeItem(storageFlag);
@@ -61,10 +66,12 @@ export async function init(logRoot: string): Promise<void> {
 
   const config: log.LogConfig = { handlers, loggers };
 
-  return await log.setup(config);
+  await log.setup(config);
+  loggerOk();
 }
 
-export default function retrieveLogger(name: string, path: string | null = null) : log.Logger{
+export async function retrieveLogger(name: string, path: string[] | null = null) : Promise<log.Logger>{
+  await logUsable;
   if(!(1 in arguments)) return log.getLogger(name);
 
   return new Proxy(log.getLogger(name), {

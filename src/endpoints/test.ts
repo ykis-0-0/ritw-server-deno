@@ -35,11 +35,12 @@ router.all('/ex2/:msg*/end', async (ctx, next) => {
   return await next();
 });
 
-import retrieveLogger from '::/logging/mod.ts';
 import { controller as abortCtrl } from '::/utils/abort_ctrl.ts';
+import { retrieveLogger } from '::/logging/mod.ts';
 
 router.get('/stop', async (ctx, next) => {
-  const baseLogger = retrieveLogger('default');
+
+  const baseLogger = await retrieveLogger('default');
 
   ctx.response.body = 'Stopping Server';
 

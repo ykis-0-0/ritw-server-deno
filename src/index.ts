@@ -10,9 +10,9 @@ console.info('Acquiring permissions, please check if the descriptors match.');
 await elevate(import.meta.url);
 //#endregion Init & Perms Acq.
 
-import retrieveLogger, { init as loggerInit } from '::/logging/mod.ts';
+import { init as loggerInit, retrieveLogger } from '::/logging/mod.ts';
 await loggerInit(roots.logRoot);
-const baseLogger = retrieveLogger('default');
+const baseLogger = await retrieveLogger('default');
 
 /*
 baseLogger.debug('debug');
