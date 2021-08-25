@@ -32,9 +32,9 @@ export default (isConsole: boolean) => function formatter(_: LogRecord): string 
     time: string = getDateString(undefined, _.datetime),
     lvel: string = ifelse<string, string>(iden)((_: string) => choose(_)(_), iden)(isConsole)(_.levelName), // We chose to only color the level names, this way it looks cleaner
     name: string = _.loggerName,
-    path: string | undefined = ((_: unknown) => typeof _ ==='object' ? (_ as ({[LOG_UNIT_PATH]?: string} | null))?.[LOG_UNIT_PATH]: undefined)([..._.args].pop());
+    path: string[] | undefined = ((_: {[LOG_UNIT_PATH]?: string[]}) => _?.[LOG_UNIT_PATH])(Object(_.args.slice(-1).shift()));
   let r: string =
-    '    ' + forConsole(colors.white)([time, lvel, name].concat([...(path || [] as [])]).map(wrap).join(' ')) + '\n' + // We can't do [t, l, n, p] 'cause there will be an `undefined` if p undef
+    '    ' + forConsole(colors.white)([time, lvel, name].concat([...(path || [])]).map(wrap).join(' ')) + '\n' + // We can't do [t, l, n, p] 'cause there will be an `undefined` if p undef
     _.msg +
     '\n';
   return r;

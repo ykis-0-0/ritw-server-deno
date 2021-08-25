@@ -36,6 +36,11 @@ import { signal as abortSignal } from '::/utils/abort_ctrl.ts';
 app.use(grandRouter.routes());
 app.use(grandRouter.allowedMethods());
 
+app.addEventListener('listen', async () => {
+  const httpLogger = await retrieveLogger('http_server', ['main']);
+  httpLogger.debug('Endpoints registered:\n' + [...grandRouter.values()].map(_ => '  '.concat(_.path)).join('\n'));
+})
+
 //! Port settings
 const serveOptions: Oak.ListenOptions = {
   port: 8080,
