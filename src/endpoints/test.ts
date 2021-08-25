@@ -1,5 +1,7 @@
 import * as Oak from 'Oak/mod.ts';
 
+import getEncodedParams from '::/utils/get_raw_pathvars.ts';
+
 const router = new Oak.Router();
 
 router.all('/:msg', async (ctx, next) => {
@@ -13,10 +15,15 @@ router.all('/:msg', async (ctx, next) => {
   return await next();
 });
 
-router.all('/ex/:msg*', async (ctx, next) => {
+router.all('/ex/:msg(.+)', async function self(ctx, next) {
+  const paramsEncoded = getEncodedParams(ctx, self);
   const ads = {
     method: ctx.request.method,
+    matched: ctx.matched,
     msg: ctx.params['msg'],
+    splitted: ctx.params['msg']?.split('/'),
+    raw: ctx.request.url.pathname,
+    reparsed: paramsEncoded,
     query: Oak.helpers.getQuery(ctx),
     fragment: ctx.request.url.hash
   };
