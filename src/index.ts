@@ -1,4 +1,4 @@
-debugger;
+//debugger;
 import * as Oak from 'Oak/mod.ts';
 
 import { elevate, roots } from '::/utils/elevator.ts';
@@ -15,19 +15,33 @@ await elevate(import.meta.url);
 await loggerInit(roots.logRoot);
 const baseLogger = await retrieveLogger('default');
 
-/*
-baseLogger.debug('debug');
-baseLogger.info('info');
-baseLogger.warning('warning');
-baseLogger.error('error');
-baseLogger.critical('critical');
-*/
 baseLogger.debug('All Folder Permissions Acquired, Logger initialized.');
 
 const app = new Oak.Application({
   serverConstructor: Oak.HttpServerNative,
 });
 
+app.use(async (ctx, next) => {
+  try{
+    await next();
+  } catch (err) {
+    if(!Oak.isHttpError(err)) throw err;
+
+    ctx.response.body
+    = `HTTP Error ${err.status} ${Oak.STATUS_TEXT.get(err.status)}\n`
+    + err.message
+    ;
+
+    if(400 <= err.status && err.status <= 499) return;
+
+    const httpLogger = await retrieveLogger('http_server');
+    const logMsg
+    = `Thrown HTTP Error: ${err.status} ${Oak.STATUS_TEXT.get(err.status)} at ${ctx.request.url}\n`
+    + `Reason: ${err.message}`
+    ;
+    httpLogger.error(logMsg);
+  }
+})
 
 app.use(grandRouter.routes());
 app.use(grandRouter.allowedMethods());
