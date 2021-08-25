@@ -13,7 +13,7 @@
         "--inspect=127.0.0.1:9229",
         "--import-map", "./importmap.json",
         "--allow-all",
-        //"--unstable",
+        "--unstable",
       ],
       "attachSimplePort": 9229,
       "outputCapture": "std",

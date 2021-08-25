@@ -15,7 +15,7 @@
               "run",
               "--import-map", "./importmap.json",
               "--allow-all",
-              //"--unstable",
+              "--unstable",
               "${workspaceFolder}/src/index.ts"
           ],
           "windows": {
