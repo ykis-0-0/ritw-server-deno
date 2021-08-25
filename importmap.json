@@ -2,6 +2,7 @@
   "imports": {
     "::std/": "https://deno.land/std@0.105.0/",
     "::/": "./src/",
-    "Oak/": "https://deno.land/x/oak@v9.0.0/"
+    "Oak/": "https://deno.land/x/oak@v9.0.0/",
+    "Mustache": "https://cdn.skypack.dev/mustache?dts"
   }
 }
