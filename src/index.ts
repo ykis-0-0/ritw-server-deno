@@ -1,16 +1,17 @@
 debugger;
+import * as Oak from 'Oak/mod.ts';
 
-//#region Initialization and Permissions Acquisition
+import { elevate, roots } from '::/utils/elevator.ts';
+import { init as loggerInit, retrieveLogger } from '::/logging/mod.ts';
+import { signal as abortSignal } from '::/utils/abort_ctrl.ts';
+import { grandRouter } from '::/endpoints/mod.ts';
+
 // We need to be running as the Main module.
 if(!import.meta.main) throw new EvalError('This is intended to be loaded as main module.');
 
-import { elevate, roots } from '::/utils/elevator.ts';
-
 console.info('Acquiring permissions, please check if the descriptors match.');
 await elevate(import.meta.url);
-//#endregion Init & Perms Acq.
 
-import { init as loggerInit, retrieveLogger } from '::/logging/mod.ts';
 await loggerInit(roots.logRoot);
 const baseLogger = await retrieveLogger('default');
 
@@ -23,15 +24,10 @@ baseLogger.critical('critical');
 */
 baseLogger.debug('All Folder Permissions Acquired, Logger initialized.');
 
-import * as Oak from 'Oak/mod.ts';
-
-import { grandRouter } from './endpoints/mod.ts';
-
 const app = new Oak.Application({
   serverConstructor: Oak.HttpServerNative,
 });
 
-import { signal as abortSignal } from '::/utils/abort_ctrl.ts';
 
 app.use(grandRouter.routes());
 app.use(grandRouter.allowedMethods());
@@ -47,11 +43,8 @@ const serveOptions: Oak.ListenOptions = {
   signal: abortSignal,
 }
 const servePromise = app.listen(serveOptions);
-
 baseLogger.info(`Server started at port ${ serveOptions.port }.`);
-
 await servePromise;
 
 baseLogger.info('Server stopped. Exiting.');
-
 Deno.exit();
