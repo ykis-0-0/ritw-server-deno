@@ -58,6 +58,31 @@ const retrieveTextContent = async (ctx: Oak.RouterContext, filePath: string) => 
   return filePromise;
 }
 
+const getPartialRetriever = async function(ctx: Oak.RouterContext, pageDir: string, pageName: string) {
+  const httpLogger = await retrieveLogger('http_server', ['site', 'partial_loader']);
+
+  return function(partialName: string) {
+    // TODO separate for internal partials
+    const pathToLook = path.join(pageDir, partialName.concat('.mustache'));
+
+    if(!fs.existsSync(pathToLook)){
+      httpLogger.error(`Partial not found for ${partialName} in ${pageDir} while fulfilling request for ${pageName}`);
+      ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering')
+    }
+
+    let partialSource: string = '';
+    try {
+      partialSource = Deno.readTextFileSync(pathToLook);
+    } catch(e) {
+      const err = e as Error; // Shut the type checker's fucking mouth
+      httpLogger.critical(`Error while reading file at ${pathToLook}: ${err.name in Deno.errors ? 'Deno.errors.' : ''}${err.name}`);
+      ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering');
+    }
+
+    return partialSource;
+  }
+};
+
 router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
 
   await validateURL(ctx, self);
@@ -71,33 +96,10 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
     return await next();
   }
 
+  const partialRetriever = await getPartialRetriever(ctx, mappedDir, matchedEntry.name);
   const filePath = path.join(roots.pagesRoot, dir, matchedEntry.name)
-
   const source = await retrieveTextContent(ctx, filePath);
-
-  Mustache.parse(source);
-
-  let dataRecv = ctx.request.hasBody ? await ctx.request.body({ type: 'json' }).value : {};
-
-  const partialRetriever = await (async function() {
-    const httpLogger = await retrieveLogger('http_server', ['site', 'partial_loader']);
-    return function(partialName: string) {
-      const pathToLook = path.join(mappedDir, partialName.concat('.mustache'));
-      if(!fs.existsSync(pathToLook)){
-        httpLogger.error(`Partial not found for ${partialName} in ${mappedDir} while fulfilling request for ${matchedEntry.name}`);
-        ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering')
-      }
-      let partialSource: string = '';
-      try {
-        partialSource = Deno.readTextFileSync(pathToLook);
-      } catch(e) {
-        const err = e as Error; // Shut the type checker's fucking mouth
-        httpLogger.critical(`Error while reading file at ${filePath}: ${err.name in Deno.errors ? 'Deno.errors.' : ''}${err.name}`);
-        ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering');
-      }
-      return partialSource;
-    }
-  })();
+  const dataRecv = ctx.request.hasBody ? await ctx.request.body({ type: 'json' }).value : {};
 
   ctx.response.body = Mustache.render(source, {
     query: Object.fromEntries(ctx.request.url.searchParams.entries()),
