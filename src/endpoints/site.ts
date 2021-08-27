@@ -18,7 +18,7 @@ const validateURL = async (ctx: Oak.RouterContext, caller: Oak.RouterMiddleware)
   const {dir = '', basename} = paramsEncoded;
 
   if([dir, basename].some(_ => /%2F/i.test(_))) ctx.throw(Oak.Status.BadRequest, `Invalid character in request URL`);
-}
+};
 
 const checkPath = async (ctx: Oak.RouterContext, folder: string, basename: string) => {
 
@@ -28,7 +28,7 @@ const checkPath = async (ctx: Oak.RouterContext, folder: string, basename: strin
   const tester = new RegExp(String.raw `^${basename}(?:\.mustache)?$`, 'i');
   const matches: Deno.DirEntry[] = [];
   for await(const entry of Deno.readDir(folder)) {
-    if(entry.isDirectory){
+    if(entry.isDirectory) {
       if(entry.name !== basename) continue;
       matches.push(entry);
       break;
@@ -41,7 +41,7 @@ const checkPath = async (ctx: Oak.RouterContext, folder: string, basename: strin
   if(matches.length > 1) ctx.throw(Oak.Status.VariantAlsoNegotiates, 'More than one page matches the specified URL');
 
   return matches.shift()!;
-}
+};
 
 const retrieveTextContent = async (ctx: Oak.RouterContext, filePath: string) => {
   const filePromise = Deno.readTextFile(filePath);
@@ -56,7 +56,7 @@ const retrieveTextContent = async (ctx: Oak.RouterContext, filePath: string) => 
   }
 
   return filePromise;
-}
+};
 
 router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
 
@@ -66,7 +66,7 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
   const mappedDir = path.join(roots.pagesRoot, dir);
 
   const matchedEntry = await checkPath(ctx, mappedDir, basename!);
-  if(matchedEntry.isDirectory){
+  if(matchedEntry.isDirectory) {
     ctx.response.redirect(ctx.request.url + '/');
     return await next();
   }
@@ -83,7 +83,7 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
     const httpLogger = await retrieveLogger('http_server', ['site', 'partial_loader']);
     return function(partialName: string) {
       const pathToLook = path.join(mappedDir, partialName.concat('.mustache'));
-      if(!fs.existsSync(pathToLook)){
+      if(!fs.existsSync(pathToLook)) {
         httpLogger.error(`Partial not found for ${partialName} in ${mappedDir} while fulfilling request for ${matchedEntry.name}`);
         ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering')
       }
@@ -112,7 +112,7 @@ router.get('/:dirs+/', async function self(ctx, next) {
   // Rename Index page here
   ctx.response.redirect(ctx.request.url + 'index.html');
   return await next();
-})
+});
 
 // And here for site root
 router.redirect('/', '/index', Oak.Status.PermanentRedirect);

@@ -3,8 +3,8 @@ import { pathMatch } from 'Oak/deps.ts';
 
 import { retrieveLogger } from '::/logging/mod.ts';
 
-export default async function getEncodedParams(ctx: Oak.RouterContext, caller: Oak.RouterMiddleware, strict: boolean = false){
-  if(!ctx.matched?.length){
+export default async function getEncodedParams(ctx: Oak.RouterContext, caller: Oak.RouterMiddleware, strict: boolean = false) {
+  if(!ctx.matched?.length) {
     // Didn't know why, but type-checking won't pass if we use ctx.throw here
     throw new Oak.httpErrors.InternalServerError('ERROR: No matched route found while one of the endpoints is reached');
   }
@@ -13,7 +13,7 @@ export default async function getEncodedParams(ctx: Oak.RouterContext, caller: O
     ctx.throw(Oak.Status.InternalServerError, 'ERROR: Middleware unable to locate itself in any registered routes');
 
   const reparsed = routes.map(_ => pathMatch<Record<string, string>>(_.path, { strict })(ctx.request.url.pathname)).filter((_): _ is Exclude<typeof _, false> => !!_);
-  if([...new Set(reparsed)].length > 1){
+  if([...new Set(reparsed)].length > 1) {
     const logger = await retrieveLogger('default', ['http_server/getEncodedParams']);
     logger.error('Caller is attached to multiple endpoints:\n\n' + routes.map(_ => '- '.concat(_.path)).join('\n'))
 
@@ -21,4 +21,4 @@ export default async function getEncodedParams(ctx: Oak.RouterContext, caller: O
   };
 
   return reparsed[0].params;
-};
+}

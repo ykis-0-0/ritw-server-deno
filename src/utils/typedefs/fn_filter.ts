@@ -1,7 +1,7 @@
 export type ByFnSignature<A extends any[], R, O extends object>
 = {
   [Ko in BfsList<A, R, O>]: O[Ko]
-}
+};
 
 type BfsList<A extends any[], R, O extends object>
 = {
