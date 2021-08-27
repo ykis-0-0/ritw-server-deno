@@ -9,6 +9,10 @@ import { roots } from '::/utils/elevator.ts';
 import getEncodedParams from '::/utils/get_raw_pathvars.ts';
 import { retrieveLogger } from '::/logging/mod.ts';
 
+/** The subdirectory in which pages will be exposed on the server directly,
+ * slashes (both starting and ending) aren't necessary */
+const dirPublicPages = 'public';
+
 const router = new Oak.Router({strict: true});
 
 const cache: Record<string, {digest: string, parsed: unknown}>  = {};
@@ -88,7 +92,7 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
   await validateURL(ctx, self);
 
   const {dir = '', basename} = ctx.params;
-  const mappedDir = path.join(roots.pagesRoot, dir);
+  const mappedDir = path.join(roots.pagesRoot, dirPublicPages, dir);
 
   const matchedEntry = await checkPath(ctx, mappedDir, basename!);
   if(matchedEntry.isDirectory){
@@ -97,7 +101,7 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
   }
 
   const partialRetriever = await getPartialRetriever(ctx, mappedDir, matchedEntry.name);
-  const filePath = path.join(roots.pagesRoot, dir, matchedEntry.name)
+  const filePath = path.join(mappedDir, matchedEntry.name)
   const source = await retrieveTextContent(ctx, filePath);
   const dataRecv = ctx.request.hasBody ? await ctx.request.body({ type: 'json' }).value : {};
 
