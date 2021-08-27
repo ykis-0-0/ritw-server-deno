@@ -17,15 +17,14 @@ const router = new Oak.Router({strict: true});
 
 const cache: Record<string, {digest: string, parsed: unknown}>  = {};
 
-const validateURL = async (ctx: Oak.RouterContext, caller: Oak.RouterMiddleware) => {
+async function validateURL(ctx: Oak.RouterContext, caller: Oak.RouterMiddleware): Promise<void> {
   const paramsEncoded = await getEncodedParams(ctx, caller, true);
   const {dir = '', basename} = paramsEncoded;
 
   if([dir, basename].some(_ => /%2F/i.test(_))) ctx.throw(Oak.Status.BadRequest, `Invalid character in request URL`);
 }
 
-const checkPath = async (ctx: Oak.RouterContext, folder: string, basename: string) => {
-
+async function checkPath(ctx: Oak.RouterContext, folder: string, basename: string): Promise<Deno.DirEntry> {
   if(!await fs.exists(folder)) ctx.throw(Oak.Status.NotFound, 'The specified path does not exist.');
   if(basename.endsWith('.mustache')) ctx.throw(Oak.Status.Forbidden, '');
 
@@ -47,7 +46,7 @@ const checkPath = async (ctx: Oak.RouterContext, folder: string, basename: strin
   return matches.shift()!;
 }
 
-const retrieveTextContent = async (ctx: Oak.RouterContext, filePath: string) => {
+async function retrieveTextContent(ctx: Oak.RouterContext, filePath: string): Promise<string> {
   const filePromise = Deno.readTextFile(filePath);
 
   try {
@@ -62,7 +61,7 @@ const retrieveTextContent = async (ctx: Oak.RouterContext, filePath: string) => 
   return filePromise;
 }
 
-const getPartialRetriever = async function(ctx: Oak.RouterContext, pageDir: string, pageName: string) {
+async function getPartialRetriever(ctx: Oak.RouterContext, pageDir: string, pageName: string): Promise<(partialName: string) => string> {
   const httpLogger = await retrieveLogger('http_server', ['site', 'partial_loader']);
 
   return function(partialName: string) {
