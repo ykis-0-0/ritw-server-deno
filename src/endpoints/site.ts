@@ -103,11 +103,10 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
   const partialRetriever = await getPartialRetriever(ctx, mappedDir, matchedEntry.name);
   const filePath = path.join(mappedDir, matchedEntry.name)
   const source = await retrieveTextContent(ctx, filePath);
-  const dataRecv = ctx.request.hasBody ? await ctx.request.body({ type: 'json' }).value : {};
+  const queries = Object.fromEntries(ctx.request.url.searchParams.entries());
 
   ctx.response.body = Mustache.render(source, {
-    query: Object.fromEntries(ctx.request.url.searchParams.entries()),
-    post: dataRecv
+    ...queries
   }, partialRetriever);
 
   return await next();
