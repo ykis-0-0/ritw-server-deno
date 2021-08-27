@@ -6,7 +6,7 @@ import * as Oak from 'Oak/mod.ts';
 import Mustache from 'Mustache';
 
 import { roots } from '::/utils/elevator.ts';
-import getEncodedParams from '::/utils/get_raw_pathvars.ts';
+import getEncodedParams from '::/utils/oak/get_raw_pathvars.ts';
 import { retrieveLogger } from '::/logging/mod.ts';
 
 /** The subdirectory in which pages will be exposed on the server directly,

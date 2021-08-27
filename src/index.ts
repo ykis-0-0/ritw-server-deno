@@ -3,7 +3,7 @@ import * as Oak from 'Oak/mod.ts';
 
 import { elevate, roots } from '::/utils/elevator.ts';
 import { init as loggerInit, retrieveLogger } from '::/logging/mod.ts';
-import { signal as abortSignal } from '::/utils/abort_ctrl.ts';
+import { signal as abortSignal } from '::/utils/oak/abort_ctrl.ts';
 import { grandRouter } from '::/endpoints/mod.ts';
 
 // We need to be running as the Main module.

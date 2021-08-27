@@ -1,7 +1,7 @@
 import * as Oak from 'Oak/mod.ts';
 
-import getEncodedParams from '::/utils/get_raw_pathvars.ts';
-import { controller as abortCtrl } from '::/utils/abort_ctrl.ts';
+import getEncodedParams from '::/utils/oak/get_raw_pathvars.ts';
+import { controller as abortCtrl } from '::/utils/oak/abort_ctrl.ts';
 import { retrieveLogger } from '::/logging/mod.ts';
 
 const router = new Oak.Router();

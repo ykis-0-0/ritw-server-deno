@@ -1,6 +1,6 @@
 import * as Oak from 'Oak/mod.ts';
 
-import getEncodedParams from '::/utils/get_raw_pathvars.ts';
+import getEncodedParams from '::/utils/oak/get_raw_pathvars.ts';
 import { roots } from '::/utils/elevator.ts';
 
 const router = new Oak.Router();
