@@ -55,6 +55,6 @@ router.get('/stop', async (ctx, next) => {
   abortCtrl.abort();
 
   baseLogger.critical('Stop Endpoint Triggered, Server Aborted!');
-})
+});
 
 export { router };

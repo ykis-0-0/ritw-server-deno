@@ -31,7 +31,7 @@ async function checkPath(ctx: Oak.RouterContext, folder: string, basename: strin
   const tester = new RegExp(String.raw `^${basename}(?:\.mustache)?$`, 'i');
   const matches: Deno.DirEntry[] = [];
   for await(const entry of Deno.readDir(folder)) {
-    if(entry.isDirectory){
+    if(entry.isDirectory) {
       if(entry.name !== basename) continue;
       matches.push(entry);
       break;
@@ -68,7 +68,7 @@ async function getPartialRetriever(ctx: Oak.RouterContext, pageDir: string, page
     // TODO separate for internal partials
     const pathToLook = path.join(pageDir, partialName.concat('.mustache'));
 
-    if(!fs.existsSync(pathToLook)){
+    if(!fs.existsSync(pathToLook)) {
       httpLogger.error(`Partial not found for ${partialName} in ${pageDir} while fulfilling request for ${pageName}`);
       ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering')
     }
@@ -84,7 +84,7 @@ async function getPartialRetriever(ctx: Oak.RouterContext, pageDir: string, page
 
     return partialSource;
   }
-};
+}
 
 router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
 
@@ -94,7 +94,7 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
   const mappedDir = path.join(roots.pagesRoot, dirPublicPages, dir);
 
   const matchedEntry = await checkPath(ctx, mappedDir, basename!);
-  if(matchedEntry.isDirectory){
+  if(matchedEntry.isDirectory) {
     ctx.response.redirect(ctx.request.url + '/');
     return await next();
   }
@@ -116,7 +116,7 @@ router.get('/:dirs+/', async function self(ctx, next) {
   // Rename Index page here
   ctx.response.redirect(ctx.request.url + 'index.html');
   return await next();
-})
+});
 
 // And here for site root
 router.redirect('/', '/index', Oak.Status.PermanentRedirect);

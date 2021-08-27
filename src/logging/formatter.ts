@@ -1,7 +1,7 @@
 import * as colors from '::std/fmt/colors.ts';
 import type { LogRecord } from '::std/log/logger.ts';
 
-import getDateString from '::/utils/dstring_iso.ts'
+import getDateString from '::/utils/dstring_iso.ts';
 
 export const LOG_UNIT_PATH: unique symbol = Symbol();
 
@@ -38,4 +38,4 @@ export default (isConsole: boolean) => function formatter(_: LogRecord): string 
     _.msg +
     '\n';
   return r;
-}
+};

@@ -1,6 +1,6 @@
 import { BaseHandler } from '::std/log/handlers.ts';
 import type { LogRecord } from '::std/log/logger.ts';
-import type { LevelName } from '::std/log/levels.ts'
+import type { LevelName } from '::std/log/levels.ts';
 
 // Mirrors `interface HandlerOptions` from ::std/log/handlers.ts
 interface HndlrOpts {
@@ -9,7 +9,7 @@ interface HndlrOpts {
 
 export default class MyConsoleHandler extends BaseHandler {
 
-  constructor(lvl: LevelName, options: HndlrOpts){
+  constructor(lvl: LevelName, options: HndlrOpts) {
     super(lvl, options);
   }
 

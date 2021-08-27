@@ -12,7 +12,7 @@ import type { ByFnSignature } from "./typedefs/fn_filter.ts";
  * @returns a string, it is literally written ON ITS FUCKING NAME CAN'T YOU SEE THAT?
  */
 
-export default function getDateString(folder: boolean = false, date: Date = new Date()): string{
+export default function getDateString(folder: boolean = false, date: Date = new Date()): string {
 
   // get part of a date, offset it a proper 1-based number, then pad it with zeros
   const pRebased: (__: number) => ((_: keyof ByFnSignature<[], number, Date>, $:number) => string)
