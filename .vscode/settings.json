@@ -1,7 +1,9 @@
 {
+  // Deno
   "deno.enable": true,
   "deno.unstable": true,
   "deno.importMap": "./importmap.json",
+  // Terminal
   "terminal.integrated.profiles.windows": {
     "PowerShell": {
       "source": "PowerShell",
@@ -20,4 +22,19 @@
     },
   },
   "terminal.integrated.defaultProfile.windows": "PowerShell",
+  // GitHub
+  "githubIssues.queries": [
+    {
+        "label": "My Issues",
+        "query": "default"
+    },
+    {
+        "label": "Created Issues",
+        "query": "author:${user} state:open repo:${owner}/${repository} sort:created-desc"
+    },
+    {
+        "label": "Memoranda",
+        "query": "repo:${owner}/${repository} author:${user} label:memo sort:created-desc"
+    }
+  ],
 }
