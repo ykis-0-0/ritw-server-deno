@@ -3,7 +3,7 @@ import * as path from '::std/path/mod.ts';
 import * as hash from '::std/hash/mod.ts';
 
 import * as Oak from 'Oak/mod.ts';
-import Mustache from 'Mustache';
+import * as MustacheWrapper from '::/utils/mustache/wrapper.ts';
 
 import { roots } from '::/utils/elevator.ts';
 import getEncodedParams from '::/utils/oak/get_raw_pathvars.ts';
@@ -104,7 +104,8 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
   const source = await retrieveTextContent(ctx, filePath);
   const queries = Object.fromEntries(ctx.request.url.searchParams.entries());
 
-  ctx.response.body = Mustache.render(source, {
+  ctx.response.body = MustacheWrapper.render(source, {
+    [MustacheWrapper.stackPopper]: () => 'HELLO',
     ...queries
   }, partialRetriever);
 
