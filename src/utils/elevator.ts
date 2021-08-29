@@ -10,10 +10,17 @@ export const roots = new class {
     throw new ReferenceError('script root not specified');
   }
 
+  /** The root directory for log files as an absolute path */
   get logRoot() { return path.join(this.#srcRoot, '..', 'logs/'); }
 
+  /**
+   * The root directory for site pages served as an absolute path,\
+   * with the public pages visible to the network\
+   * stored in the subdirectory specified by `dirPublicPages` in `/endpoints/site.ts`
+   * */
   get pagesRoot() { return path.join(this.#srcRoot, '..', 'pages/'); }
 
+  /** The root dirctory for static (unprocessed) assets as an absolute path */
   get assetRoot() { return path.join(this.#srcRoot, '..', 'assets/'); }
 
 };

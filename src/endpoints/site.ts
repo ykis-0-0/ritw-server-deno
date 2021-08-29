@@ -90,6 +90,8 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
 
   await validateURL(ctx, self);
 
+  // Oak has alreaady normalized the path vars for us,
+  // so we just need to use those for granted (seems to be lol)
   const {dir = '', basename} = ctx.params;
   const mappedDir = path.join(roots.pagesRoot, dirPublicPages, dir);
 
@@ -117,8 +119,5 @@ router.get('/:dirs+/', async function self(ctx, next) {
   ctx.response.redirect(ctx.request.url + 'index.html');
   return await next();
 });
-
-// And here for site root
-router.redirect('/', '/index', Oak.Status.PermanentRedirect);
 
 export { router };
