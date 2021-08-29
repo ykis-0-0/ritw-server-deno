@@ -54,7 +54,13 @@ export function parse(template: string, tags?: MustacheTypes.Tags) {
   return tokenTree;
 }
 
-export function render(template: string, view: MustacheTypes.View , partials?: MustacheTypes.PartialsPool, config?: MustacheTypes.TagsOrRenderOptions) {
+type rArgs = [
+  template: string,
+  view: MustacheTypes.View,
+  partials?: MustacheTypes.PartialsPool,
+  config?: MustacheTypes.TagsOrRenderOptions
+];
+export function render(...[template, view, partials, config]: rArgs) {
   const tags = Array.isArray(config) ? config : config?.tags;
 
   // ensure template is patched
