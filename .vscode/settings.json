@@ -3,6 +3,10 @@
   "deno.enable": true,
   "deno.unstable": true,
   "deno.importMap": "./importmap.json",
+  // Emmet
+  "emmet.includeLanguages": {
+    "mustache": "html"
+  },
   // Terminal
   "terminal.integrated.profiles.windows": {
     "PowerShell": {
