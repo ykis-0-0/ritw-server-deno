@@ -13,6 +13,6 @@ grandRouter.use('/assets', assetsRouter.routes());
 grandRouter.use('/site', siteRouter.routes()); //, siteRouter.allowedMethods());
 
 grandRouter.redirect('/', '/index.html', Oak.Status.PermanentRedirect);
-grandRouter.redirect('/index.html', '/site', Oak.Status.TemporaryRedirect);
+grandRouter.redirect('/index.html', '/site/index', Oak.Status.TemporaryRedirect);
 
 export { grandRouter };

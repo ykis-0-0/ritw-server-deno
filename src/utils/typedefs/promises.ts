@@ -1,0 +1,1 @@
+export type Awaited<P extends object> = P extends Promise<infer R> ? R : never;
