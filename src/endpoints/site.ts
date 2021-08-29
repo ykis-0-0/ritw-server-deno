@@ -1,13 +1,13 @@
 import * as fs from '::std/fs/mod.ts';
 import * as path from '::std/path/mod.ts';
-import * as hash from '::std/hash/mod.ts';
 
 import * as Oak from 'Oak/mod.ts';
-import * as MustacheWrapper from '::/utils/mustache/wrapper.ts';
 
+import { retrieveLogger } from '::/logging/mod.ts';
 import { roots } from '::/utils/elevator.ts';
 import getEncodedParams from '::/utils/oak/get_raw_pathvars.ts';
-import { retrieveLogger } from '::/logging/mod.ts';
+import * as MustacheWrapper from '::/utils/mustache/wrapper.ts';
+import getPartialHandlers from '::/utils/mustache/partial_handlers.ts';
 
 /** The subdirectory in which pages will be exposed on the server directly,
  * slashes (both starting and ending) aren't necessary */
