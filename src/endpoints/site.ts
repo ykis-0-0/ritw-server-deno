@@ -61,30 +61,6 @@ async function retrieveTextContent(ctx: Oak.RouterContext, filePath: string): Pr
   return filePromise;
 }
 
-async function getPartialRetriever(ctx: Oak.RouterContext, pageDir: string, pageName: string): Promise<(partialName: string) => string> {
-  const httpLogger = await retrieveLogger('http_server', ['site', 'partial_loader']);
-
-  return function(partialName: string) {
-    // TODO separate for internal partials
-    const pathToLook = path.join(pageDir, partialName.concat('.mustache'));
-
-    if(!fs.existsSync(pathToLook)) {
-      httpLogger.error(`Partial not found for ${partialName} in ${pageDir} while fulfilling request for ${pageName}`);
-      ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering')
-    }
-
-    let partialSource: string = '';
-    try {
-      partialSource = Deno.readTextFileSync(pathToLook);
-    } catch(e) {
-      const err = e as Error; // Shut the type checker's fucking mouth
-      httpLogger.critical(`Error while reading file at ${pathToLook}: ${err.name in Deno.errors ? 'Deno.errors.' : ''}${err.name}`);
-      ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering');
-    }
-
-    return partialSource;
-  }
-}
 
 router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
 
@@ -99,15 +75,19 @@ router.get('/:dir(.+)?/:basename', async function self(ctx, next) {
     return await next();
   }
 
-  const partialRetriever = await getPartialRetriever(ctx, mappedDir, matchedEntry.name);
+  const partialHandlers = await getPartialHandlers(ctx, mappedDir, matchedEntry.name);
   const filePath = path.join(mappedDir, matchedEntry.name)
   const source = await retrieveTextContent(ctx, filePath);
   const queries = Object.fromEntries(ctx.request.url.searchParams.entries());
 
-  ctx.response.body = MustacheWrapper.render(source, {
-    [MustacheWrapper.stackPopper]: () => 'HELLO',
-    ...queries
-  }, partialRetriever);
+  try {
+    ctx.response.body = MustacheWrapper.render(source, {
+      [MustacheWrapper.stackPopper]: partialHandlers.unwindStack,
+      ...queries
+    }, partialHandlers.resolvePartial);
+  } catch(err) {
+    ctx.throw(Oak.Status.InternalServerError, 'Error while processing server-side rendering');
+  }
 
   return await next();
 });
